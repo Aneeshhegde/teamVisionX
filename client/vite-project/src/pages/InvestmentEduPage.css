@@ -1,0 +1,175 @@
+.edu-page-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.edu-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.edu-tab-link {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: var(--transition-smooth);
+}
+
+.edu-tab-link:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.edu-tab-link.active {
+  background: rgba(37, 99, 235, 0.2);
+  border-color: var(--accent-primary);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+}
+
+.edu-content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.edu-header-banner {
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-radius: var(--radius-md);
+  flex-wrap: wrap;
+}
+
+.edu-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.edu-tagline {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.edu-metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.edu-stat-pill {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.stat-pill-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.stat-pill-val {
+  font-size: 15px;
+}
+
+.edu-body-text {
+  font-size: 14.5px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.edu-two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.benefit-positive {
+  border-left: 3px solid var(--accent-teal);
+}
+
+.benefit-negative {
+  border-left: 3px solid var(--accent-rose);
+}
+
+.item-bullet {
+  color: var(--accent-cyan);
+  font-size: 13px;
+  margin-top: 1px;
+}
+
+.factors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.factor-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.factor-number {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.12);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.factor-text {
+  font-size: 13.5px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .edu-two-column {
+    grid-template-columns: 1fr;
+  }
+}

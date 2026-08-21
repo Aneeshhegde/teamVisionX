@@ -87,6 +87,17 @@ export const Dashboard = () => {
             <p className="welcome-sub">
               Your financial blueprint is active. Review your cashflow metrics, emergency runway, and recommended actions below.
             </p>
+            <div className="dashboard-quick-actions">
+              <Link to="/wealth-vault" className="btn btn-primary btn-quick-action">
+                + Add Asset
+              </Link>
+              <Link to="/goals" className="btn btn-secondary btn-quick-action">
+                + Create Goal
+              </Link>
+              <Link to="/action-plan" className="btn btn-secondary btn-quick-action">
+                📋 Action Plan
+              </Link>
+            </div>
           </div>
 
           <div className="banner-right">

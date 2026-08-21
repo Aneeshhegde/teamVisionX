@@ -1,5 +1,7 @@
 const FinancialProfile = require("../models/FinancialProfile");
 const User = require("../models/User");
+const Asset = require("../models/Asset");
+const Goal = require("../models/Goal");
 const { sendSuccess, sendError } = require("../utils/apiResponse");
 
 /**
@@ -10,6 +12,8 @@ const getDashboardData = async (req, res) => {
     const userId = req.user.id;
     const user = await User.findById(userId).select("name email role isOnboarded createdAt");
     const profile = await FinancialProfile.findOne({ userId });
+    const assets = await Asset.find({ userId });
+    const goals = await Goal.find({ userId });
 
     if (!profile) {
       return sendSuccess(res, {
@@ -20,6 +24,9 @@ const getDashboardData = async (req, res) => {
           monthlyExpenses: 0,
           currentSavings: 0,
           netWorth: 0,
+          totalAssets: 0,
+          totalInvestments: 0,
+          totalLiabilities: 0,
           savingsRate: 0,
           expenseRatio: 0,
           emergencyFundMonths: 0,
@@ -46,18 +53,33 @@ const getDashboardData = async (req, res) => {
     const expenseRatio = income > 0 ? Math.round((expenses / income) * 100) : 0;
     const emergencyFundMonths = expenses > 0 ? Number((savings / expenses).toFixed(1)) : 0;
 
-    // Calculate a preliminary Financial Health Score (0 - 100)
+    // Calculate aggregated asset values
+    let totalInvestmentsValue = 0;
+    let totalInvestedPrincipal = 0;
+    assets.forEach((asset) => {
+      totalInvestmentsValue += Number(asset.currentValue || 0);
+      totalInvestedPrincipal += Number(asset.investedAmount || 0);
+    });
+
+    const totalAssets = savings + totalInvestmentsValue;
+    const totalLiabilities = 0; // Loans module pending in later phase
+    const netWorth = totalAssets - totalLiabilities;
+
+    // Calculate a comprehensive Financial Health Score (0 - 100)
     let score = 50; // base score
-    if (savingsRate >= 30) score += 20;
-    else if (savingsRate >= 15) score += 10;
-    else if (savingsRate < 5) score -= 15;
+    if (savingsRate >= 30) score += 15;
+    else if (savingsRate >= 15) score += 8;
+    else if (savingsRate < 5) score -= 10;
 
     if (emergencyFundMonths >= 6) score += 20;
     else if (emergencyFundMonths >= 3) score += 10;
-    else score -= 10;
+    else score -= 15;
 
     if (expenseRatio <= 50) score += 10;
     else if (expenseRatio > 80) score -= 15;
+
+    if (assets.length >= 3) score += 5;
+    if (goals.length >= 1) score += 5;
 
     const healthScore = Math.min(100, Math.max(10, score));
 
@@ -69,7 +91,7 @@ const getDashboardData = async (req, res) => {
         type: "warning",
         title: "Emergency Runway Alert",
         message: `Your emergency fund covers ${emergencyFundMonths} months. We recommend building at least 3 to 6 months of expenses (₹${(expenses * 6).toLocaleString("en-IN")}).`,
-        link: "/wealth-vault",
+        link: "/financial-xray",
       });
     }
     if (expenseRatio > 70) {
@@ -87,7 +109,16 @@ const getDashboardData = async (req, res) => {
         type: "success",
         title: "Strong Savings Momentum",
         message: `Excellent! You are saving ${savingsRate}% of your income. Consider allocating surplus to disciplined SIP investments.`,
-        link: "/calculators/sip",
+        link: "/investments/sip",
+      });
+    }
+    if (assets.length === 0) {
+      recentAlerts.push({
+        id: "no-assets-vault",
+        type: "info",
+        title: "Consolidate Your Portfolio",
+        message: "Your Wealth Vault is empty. Track stocks, mutual funds, gold, and FDs to see your full financial blueprint.",
+        link: "/wealth-vault",
       });
     }
 
@@ -99,13 +130,17 @@ const getDashboardData = async (req, res) => {
         monthlyExpenses: expenses,
         monthlySurplus: netSavingsPerMonth,
         currentSavings: savings,
-        netWorth: savings, // Will combine with Assets - Liabilities in Phase 2
-        totalAssets: savings,
-        totalLiabilities: 0,
+        totalInvestments: totalInvestmentsValue,
+        totalInvestedPrincipal,
+        netWorth,
+        totalAssets,
+        totalLiabilities,
         savingsRate,
         expenseRatio,
         emergencyFundMonths,
         healthScore,
+        assetsCount: assets.length,
+        goalsCount: goals.length,
       },
       profile: {
         employmentStatus: profile.employmentStatus,

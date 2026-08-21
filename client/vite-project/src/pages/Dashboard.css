@@ -53,6 +53,19 @@
   font-size: 14px;
   max-width: 600px;
   line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.dashboard-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-quick-action {
+  padding: 8px 18px;
+  font-size: 13px;
 }
 
 .banner-right {

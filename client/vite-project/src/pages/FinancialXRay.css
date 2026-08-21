@@ -1,0 +1,211 @@
+.xray-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.xray-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.xray-title {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+
+.xray-sub {
+  color: var(--text-secondary);
+  font-size: 14px;
+  max-width: 680px;
+}
+
+/* XRay Grid */
+.xray-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.diagnostic-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-md);
+  position: relative;
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.card-icon-box {
+  font-size: 24px;
+}
+
+.diagnostic-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.diagnostic-desc {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.diagnostic-metrics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg-surface);
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 16px;
+}
+
+.diag-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.diag-metric-row.highlight {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 6px;
+  margin-top: 2px;
+  color: var(--text-primary);
+}
+
+.card-action-footer {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.action-arrow-link {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.action-arrow-link:hover {
+  color: #38bdf8;
+  transform: translateX(2px);
+}
+
+/* Debt inactive box */
+.debt-inactive-box {
+  background: var(--bg-surface);
+  padding: 20px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.inactive-icon {
+  font-size: 24px;
+  opacity: 0.7;
+}
+
+.inactive-text {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Goals mini grid */
+.goals-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.goal-mini-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.goal-mini-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13.5px;
+}
+
+.goal-mini-progress {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.goal-mini-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, #3b82f6, #06b6d4);
+  transition: width 0.5s ease;
+}
+
+.goal-mini-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+/* Observations List */
+.observations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.observation-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+.obs-bullet {
+  color: var(--accent-cyan);
+  font-size: 14px;
+  margin-top: 1px;
+}
+
+.obs-text {
+  font-size: 13.5px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}

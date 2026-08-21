@@ -5,6 +5,11 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const assetRoutes = require("./routes/assetRoutes");
+const goalRoutes = require("./routes/goalRoutes");
+const xrayRoutes = require("./routes/xrayRoutes");
+const actionPlanRoutes = require("./routes/actionPlanRoutes");
+const investmentRoutes = require("./routes/investmentRoutes");
 
 dotenv.config();
 
@@ -20,6 +25,11 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/assets", assetRoutes);
+app.use("/api/goals", goalRoutes);
+app.use("/api/financial-xray", xrayRoutes);
+app.use("/api/action-plan", actionPlanRoutes);
+app.use("/api/investments", investmentRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend is Running 🚀");

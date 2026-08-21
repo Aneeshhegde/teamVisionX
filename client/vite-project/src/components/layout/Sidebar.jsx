@@ -49,42 +49,42 @@ export const Sidebar = ({ isMobileOpen, onCloseMobile }) => {
       key: "calculators",
       title: "Plan & Calculate",
       items: [
-        { label: "Calculators Suite", path: "/calculators", icon: "🧮" },
-        { label: "SIP Calculator", path: "/calculators/sip", icon: "📈" },
-        { label: "Step-Up SIP", path: "/calculators/step-up-sip", icon: "🚀" },
-        { label: "Loan EMI", path: "/calculators/emi", icon: "💳" },
-        { label: "FD Growth", path: "/calculators/fd", icon: "🔒" },
-        { label: "Goal Target", path: "/calculators/goal", icon: "🎯" },
+        { label: "Calculators Suite", path: "/calculators", icon: "🧮", disabled: true, badge: "Soon" },
+        { label: "SIP Calculator", path: "/calculators/sip", icon: "📈", disabled: true, badge: "Soon" },
+        { label: "Step-Up SIP", path: "/calculators/step-up-sip", icon: "🚀", disabled: true, badge: "Soon" },
+        { label: "Loan EMI", path: "/calculators/emi", icon: "💳", disabled: true, badge: "Soon" },
+        { label: "FD Growth", path: "/calculators/fd", icon: "🔒", disabled: true, badge: "Soon" },
+        { label: "Goal Target", path: "/calculators/goal", icon: "🎯", disabled: true, badge: "Soon" },
       ],
     },
     {
       key: "loans",
       title: "Loans & Debt",
       items: [
-        { label: "Loans Overview", path: "/loans", icon: "📑" },
-        { label: "Loan Finder", path: "/loans/finder", icon: "🔍" },
-        { label: "Compare Loans", path: "/loans/compare", icon: "⚖️" },
-        { label: "Debt Health (DTI)", path: "/loans/debt-health", icon: "🩺" },
-        { label: "Repayment Planner", path: "/loans/repayment", icon: "⚡" },
+        { label: "Loans Overview", path: "/loans", icon: "📑", disabled: true, badge: "Phase 2" },
+        { label: "Loan Finder", path: "/loans/finder", icon: "🔍", disabled: true, badge: "Phase 2" },
+        { label: "Compare Loans", path: "/loans/compare", icon: "⚖️", disabled: true, badge: "Phase 2" },
+        { label: "Debt Health (DTI)", path: "/loans/debt-health", icon: "🩺", disabled: true, badge: "Phase 2" },
+        { label: "Repayment Planner", path: "/loans/repayment", icon: "⚡", disabled: true, badge: "Phase 2" },
       ],
     },
     {
       key: "decide",
       title: "Decide Smarter",
       items: [
-        { label: "AI Decision Lab", path: "/ai-decision-lab", icon: "🤖" },
-        { label: "My Next ₹10,000", path: "/my-next-money", icon: "💡" },
-        { label: "Future You Simulator", path: "/future-you", icon: "⏳" },
-        { label: "Hype Check", path: "/hype-check", icon: "🛡️" },
-        { label: "Government Schemes", path: "/schemes", icon: "🇮🇳" },
+        { label: "AI Decision Lab", path: "/ai-decision-lab", icon: "🤖", disabled: true, badge: "Soon" },
+        { label: "My Next ₹10,000", path: "/my-next-money", icon: "💡", disabled: true, badge: "Soon" },
+        { label: "Future You Simulator", path: "/future-you", icon: "⏳", disabled: true, badge: "Soon" },
+        { label: "Hype Check", path: "/hype-check", icon: "🛡️", disabled: true, badge: "Soon" },
+        { label: "Government Schemes", path: "/schemes", icon: "🇮🇳", disabled: true, badge: "Soon" },
       ],
     },
     {
       key: "system",
       title: "System",
       items: [
-        { label: "Audit & History", path: "/history", icon: "🕰️" },
-        { label: "Settings & Profile", path: "/settings", icon: "⚙️" },
+        { label: "Audit & History", path: "/history", icon: "🕰️", disabled: true, badge: "Soon" },
+        { label: "Settings & Profile", path: "/onboarding", icon: "⚙️" },
         ...(isAdmin
           ? [{ label: "Admin Portal", path: "/admin", icon: "👑", badge: "Admin" }]
           : []),
@@ -128,23 +128,46 @@ export const Sidebar = ({ isMobileOpen, onCloseMobile }) => {
 
               {!collapsedGroups[section.key] && (
                 <div className="nav-items-list">
-                  {section.items.map((item) => (
-                    <NavLink
-                      key={item.path}
-                      to={item.path}
-                      end={item.path === "/dashboard" || item.path === "/calculators" || item.path === "/investments" || item.path === "/loans" || item.path === "/ai-decision-lab" || item.path === "/admin"}
-                      className={({ isActive }) =>
-                        `nav-link ${isActive ? "active" : ""}`
-                      }
-                      onClick={() => {
-                        if (isMobileOpen && onCloseMobile) onCloseMobile();
-                      }}
-                    >
-                      <span className="nav-icon">{item.icon}</span>
-                      <span className="nav-label">{item.label}</span>
-                      {item.badge && <span className="nav-badge">{item.badge}</span>}
-                    </NavLink>
-                  ))}
+                  {section.items.map((item) => {
+                    if (item.disabled) {
+                      return (
+                        <div
+                          key={item.path}
+                          className="nav-link nav-link-disabled"
+                          title={`${item.label} (Planned for upcoming release)`}
+                        >
+                          <span className="nav-icon">{item.icon}</span>
+                          <span className="nav-label">{item.label}</span>
+                          {item.badge && (
+                            <span className="nav-badge nav-badge-muted">{item.badge}</span>
+                          )}
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        end={
+                          item.path === "/dashboard" ||
+                          item.path === "/investments"
+                        }
+                        className={({ isActive }) =>
+                          `nav-link ${isActive ? "active" : ""}`
+                        }
+                        onClick={() => {
+                          if (isMobileOpen && onCloseMobile) onCloseMobile();
+                        }}
+                      >
+                        <span className="nav-icon">{item.icon}</span>
+                        <span className="nav-label">{item.label}</span>
+                        {item.badge && (
+                          <span className="nav-badge">{item.badge}</span>
+                        )}
+                      </NavLink>
+                    );
+                  })}
                 </div>
               )}
             </div>
