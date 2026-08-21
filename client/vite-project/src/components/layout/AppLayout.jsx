@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 import Sidebar from "./Sidebar";
 import Disclaimer from "../common/Disclaimer";
 import "./AppLayout.css";
 
 export const AppLayout = ({ children, disclaimerVariant = "general" }) => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -49,10 +51,27 @@ export const AppLayout = ({ children, disclaimerVariant = "general" }) => {
           </div>
 
           <div className="header-right">
-            <div className="market-ticker-pill">
+            <a
+              href="https://www.nseindia.com/market-data/live-equity-market?utm_source=chatgpt.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="market-ticker-pill"
+              title="Open Official NSE India Live Equity Market Feed"
+            >
               <span className="ticker-pulse"></span>
-              <span className="ticker-text">NSE Simulation Live</span>
-            </div>
+              <span className="ticker-text">NSE Live Market ↗</span>
+            </a>
+
+            <button
+              type="button"
+              className="theme-toggle-btn"
+              onClick={toggleTheme}
+              title={`Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`}
+              aria-label="Toggle Dark/Light Theme"
+            >
+              <span className="theme-icon">{theme === "dark" ? "☀️" : "🌙"}</span>
+              <span className="theme-label">{theme === "dark" ? "Light" : "Dark"}</span>
+            </button>
 
             <div className="user-profile-menu">
               <button

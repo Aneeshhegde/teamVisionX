@@ -26,7 +26,7 @@ export const ProgressRing = ({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255, 255, 255, 0.08)"
+          stroke="rgba(150, 150, 150, 0.2)"
           strokeWidth={strokeWidth}
         />
         {/* Progress Arc */}

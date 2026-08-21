@@ -42,20 +42,51 @@
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  padding: 8px 14px;
+  padding: 6px 8px 6px 16px;
+  transition: var(--transition-smooth);
+}
+
+.hype-input-wrapper:focus-within {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25);
+}
+
+.hype-search-icon {
+  font-size: 16px;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-right: 4px;
 }
 
 .hype-input-field {
-  border: none;
-  background: transparent;
-  padding: 8px 0;
-  font-size: 14px;
+  flex: 1;
+  border: none !important;
+  background: transparent !important;
+  padding: 8px 4px !important;
+  font-size: 14.5px;
   color: var(--text-primary);
-  width: 100%;
+  outline: none !important;
+  box-shadow: none !important;
+  font-family: inherit;
 }
 
-.hype-input-field:focus {
-  box-shadow: none;
+.hype-input-field::placeholder {
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+.btn-hype-submit {
+  border-radius: var(--radius-sm);
+  padding: 10px 22px;
+  font-size: 13.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
 }
 
 .trending-chips-row {
@@ -79,6 +110,9 @@
   border-radius: var(--radius-full);
   font-size: 12px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   transition: var(--transition-smooth);
 }
 
@@ -91,6 +125,14 @@
   background: rgba(6, 182, 212, 0.15);
   border-color: var(--accent-cyan);
   color: var(--accent-cyan);
+}
+
+.trending-price-tag {
+  font-size: 10.5px;
+  color: var(--accent-teal);
+  background: rgba(16, 185, 129, 0.12);
+  padding: 1px 6px;
+  border-radius: 4px;
 }
 
 /* Results Box */
@@ -138,6 +180,39 @@
   font-size: 13.5px;
   color: var(--text-secondary);
   line-height: 1.5;
+}
+
+/* Live Real-Time Market Data Card */
+.hype-live-metrics-card {
+  padding: 20px 24px;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.06) 0%, var(--bg-card) 100%);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+}
+
+.hype-live-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hype-live-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.live-stat-pill {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* 6 Dimensions */

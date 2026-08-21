@@ -157,7 +157,7 @@ export const ComparisonAreaChart = ({
                 y1={t.y}
                 x2={width - padding.right}
                 y2={t.y}
-                stroke="rgba(255, 255, 255, 0.05)"
+                stroke="rgba(150, 150, 150, 0.18)"
                 strokeDasharray="4 4"
               />
               <text

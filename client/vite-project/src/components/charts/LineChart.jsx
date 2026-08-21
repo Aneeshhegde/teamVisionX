@@ -174,7 +174,7 @@ export const LineChart = ({
                 y1={tick.y}
                 x2={width - padding.right}
                 y2={tick.y}
-                stroke="rgba(255, 255, 255, 0.05)"
+                stroke="rgba(150, 150, 150, 0.18)"
                 strokeDasharray="4 4"
               />
               <text

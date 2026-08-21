@@ -66,7 +66,7 @@ export const DonutChart = ({
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="rgba(255, 255, 255, 0.05)"
+            stroke="rgba(150, 150, 150, 0.18)"
             strokeWidth={strokeWidth}
           />
 

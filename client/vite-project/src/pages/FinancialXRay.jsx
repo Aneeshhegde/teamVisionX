@@ -145,8 +145,8 @@ export const FinancialXRay = () => {
             <Link to="/action-plan" className="btn btn-secondary">
               Action Plan &rarr;
             </Link>
-            <Link to="/ai-decision-lab" className="btn btn-primary">
-              Ask AI Decision Lab &rarr;
+            <Link to="/ai-decision-lab" className="btn btn-primary" style={{ fontWeight: 800, letterSpacing: "0.02em" }}>
+              🤖 ASK AI &rarr;
             </Link>
           </div>
         </div>

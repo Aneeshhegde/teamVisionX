@@ -1,6 +1,7 @@
 const express = require("express");
 const authMiddleware = require("../middleware/authMiddleware");
 const {
+  getHubOverview,
   getStocksSearch,
   getStockDetails,
   getEducationalContent,
@@ -11,6 +12,7 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
+router.get("/hub-summary", getHubOverview);
 router.get("/stocks/search", getStocksSearch);
 router.get("/stocks/:symbol", getStockDetails);
 router.get("/modules", getAllModules);

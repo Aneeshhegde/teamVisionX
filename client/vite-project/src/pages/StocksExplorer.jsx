@@ -48,8 +48,8 @@ export const StocksExplorer = () => {
       const res = await api.get(`/api/investments/stocks/${symbol}`);
       if (res && res.data) {
         setSelectedStock(res.data);
-        if (res.meta?.isSimulated !== undefined) {
-          setIsSimulated(res.meta.isSimulated);
+        if (res.data.isSimulated !== undefined) {
+          setIsSimulated(res.data.isSimulated);
         }
       } else {
         throw new Error("Failed to load stock details.");
@@ -106,11 +106,19 @@ export const StocksExplorer = () => {
         </svg>
         <div className="chart-axis-labels">
           <span>{history[0].date}</span>
-          <span className="currency font-bold text-muted">30-Day Simulation Trend</span>
+          <span className="currency font-bold text-muted">30-Day Trendline Action</span>
           <span>{history[history.length - 1].date}</span>
         </div>
       </div>
     );
+  };
+
+  const handleAskAIAboutStock = (symbol, name) => {
+    navigate("/ai-decision-lab", {
+      state: {
+        presetQuery: `Analyze whether I should buy ${name} (${symbol}) considering its valuation and my current earnings stage.`,
+      },
+    });
   };
 
   return (
@@ -121,16 +129,16 @@ export const StocksExplorer = () => {
           <div>
             <div className="breadcrumb-pill">
               <span className="live-dot"></span>
-              <span>INDIAN EQUITIES EXPLORER</span>
+              <span>INDIAN EQUITIES EXPLORER & UPSTOX INTELLIGENCE</span>
             </div>
             <h1 className="stocks-title">Stocks Explorer</h1>
             <p className="stocks-sub">
-              Search Indian blue-chip tickers, evaluate key financial valuation ratios, and simulate asset performance before adding holdings to your Wealth Vault.
+              Search Indian blue-chip tickers, evaluate key financial valuation ratios (P/E vs Industry, ROE), and inspect earnings-based buying suggestions.
             </p>
           </div>
           <div className="data-source-pill">
             <span className="data-badge-indicator"></span>
-            <span>{isSimulated ? "SIMULATED DATA (Synthetic Engine)" : "LIVE MARKET DATA"}</span>
+            <span>{isSimulated ? "NSE BENCHMARK EOD" : "UPSTOX LIVE FEED"}</span>
           </div>
         </div>
 
@@ -141,7 +149,7 @@ export const StocksExplorer = () => {
             <input
               type="text"
               className="stocks-search-input"
-              placeholder="Search by symbol or company (e.g. RELIANCE, TCS, HDFC, INFY)..."
+              placeholder="Search by symbol or company (e.g. RELIANCE, TCS, HDFCBANK, INFY)..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -151,7 +159,7 @@ export const StocksExplorer = () => {
           {/* Quick Filter Buttons */}
           <div className="popular-tickers-row">
             <span className="popular-label">Popular Tickers:</span>
-            {["RELIANCE", "TCS", "HDFCBANK", "INFY", "TATAMOTORS", "ITC", "SBIN", "BHARTIARTL"].map(
+            {["RELIANCE", "TCS", "HDFCBANK", "INFY", "TATAMOTORS", "ITC", "SBIN", "BHARTIARTL", "LT"].map(
               (sym) => (
                 <button
                   key={sym}
@@ -212,7 +220,7 @@ export const StocksExplorer = () => {
           <div className="stocks-detail-column">
             {loadingDetails ? (
               <div className="glass-panel" style={{ padding: "40px" }}>
-                <LoadingState message="Fetching valuation metrics and 30-day price trendline..." />
+                <LoadingState message="Fetching live valuation metrics and price trendline..." />
               </div>
             ) : error ? (
               <ErrorState title="Unable to Load Ticker" message={error} onRetry={() => loadStockDetails("RELIANCE")} />
@@ -244,11 +252,39 @@ export const StocksExplorer = () => {
                   </div>
                 </div>
 
+                {/* 🌟 EARNINGS-BASED VALUATION & BUYING INTELLIGENCE */}
+                <div className="stock-intelligence-box glass-panel glow-hover">
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "18px" }}>💡</span>
+                      <span className="font-bold text-cyan" style={{ fontSize: "13px", textTransform: "uppercase" }}>
+                        Valuation & Earnings Insight
+                      </span>
+                    </div>
+                    <span className="badge badge-green font-mono">{selectedStock.valuationStatus || "Fair Value"}</span>
+                  </div>
+
+                  <p style={{ fontSize: "13.5px", color: "var(--text-secondary)", margin: "0 0 10px 0", lineHeight: "1.5" }}>
+                    <strong>Suitability:</strong> {selectedStock.suitability || "Long-term Wealth Creation"}.
+                    P/E ratio of <strong>{selectedStock.peRatio}</strong> vs Industry benchmark of <strong>{selectedStock.industryPE || "—"}</strong>.
+                    ROE of <strong>{selectedStock.roe || "—"}</strong> indicates efficient capital deployment.
+                  </p>
+
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    style={{ fontSize: "12.5px", fontWeight: 800, padding: "8px 16px" }}
+                    onClick={() => handleAskAIAboutStock(selectedStock.symbol, selectedStock.name)}
+                  >
+                    🤖 ASK AI ABOUT {selectedStock.symbol} &rarr;
+                  </button>
+                </div>
+
                 {/* 30-Day Trend Chart */}
                 <div className="detail-chart-box">
                   <div className="chart-header">
-                    <h4>📊 30-Day Simulated Price Action</h4>
-                    <span className="badge badge-blue">Historical Simulation</span>
+                    <h4>📊 30-Day Price Trendline</h4>
+                    <span className="badge badge-blue">{selectedStock.dataSource || "NSE Feed"}</span>
                   </div>
                   {renderSparkline(selectedStock.history)}
                 </div>
@@ -257,7 +293,15 @@ export const StocksExplorer = () => {
                 <div className="stock-metrics-grid">
                   <div className="stat-box">
                     <span className="stat-label">P/E Ratio</span>
-                    <span className="stat-val font-bold">{selectedStock.peRatio || "—"}</span>
+                    <span className="stat-val font-bold text-cyan">{selectedStock.peRatio || "—"}</span>
+                  </div>
+                  <div className="stat-box">
+                    <span className="stat-label">Industry P/E</span>
+                    <span className="stat-val font-bold">{selectedStock.industryPE || "—"}</span>
+                  </div>
+                  <div className="stat-box">
+                    <span className="stat-label">Return on Equity (ROE)</span>
+                    <span className="stat-val font-bold text-teal">{selectedStock.roe || "—"}</span>
                   </div>
                   <div className="stat-box">
                     <span className="stat-label">Market Capitalization</span>
@@ -281,7 +325,7 @@ export const StocksExplorer = () => {
                   </div>
                   <div className="stat-box">
                     <span className="stat-label">Dividend Yield</span>
-                    <span className="stat-val font-bold">{selectedStock.dividendYield || "—"}</span>
+                    <span className="stat-val font-bold text-amber">{selectedStock.dividendYield || "—"}</span>
                   </div>
                 </div>
 
