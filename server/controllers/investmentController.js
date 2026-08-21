@@ -171,12 +171,19 @@ const getStocksSearch = async (req, res) => {
 };
 
 /**
- * Get individual stock details by symbol
+ * Get individual stock details by symbol (valid stocks only)
  */
 const getStockDetails = async (req, res) => {
   try {
     const { symbol } = req.params;
     const result = await getStockBySymbol(symbol);
+    if (!result.data) {
+      return sendError(
+        res,
+        `No valid stock found matching ticker '${symbol}'. Please search with a valid certified stock symbol.`,
+        404
+      );
+    }
     return sendSuccess(res, result.data, `Stock details for ${symbol}`, 200, {
       isSimulated: result.isSimulated,
       provider: result.provider,

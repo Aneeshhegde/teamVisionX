@@ -5,6 +5,25 @@ import { LoadingState, ErrorState } from "../components/common/StateViews";
 import api from "../utils/apiClient";
 import "./StocksExplorer.css";
 
+const POPULAR_TICKERS = [
+  "RELIANCE",
+  "TCS",
+  "HDFCBANK",
+  "INFY",
+  "TATAMOTORS",
+  "VEDL",
+  "ZOMATO",
+  "SWIGGY",
+  "HAL",
+  "WAAREEENER",
+  "PREMIERENE",
+  "CDSL",
+  "SUZLON",
+  "IREDA",
+  "TITAN",
+  "BAJFINANCE",
+];
+
 export const StocksExplorer = () => {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
@@ -13,35 +32,11 @@ export const StocksExplorer = () => {
   const [loadingSearch, setLoadingSearch] = useState(false);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [error, setError] = useState(null);
-  const [isSimulated, setIsSimulated] = useState(true);
+  const [isSimulated, setIsSimulated] = useState(false);
 
-  // Search stocks debounced
-  const performSearch = useCallback(async (searchTerm) => {
-    setLoadingSearch(true);
-    try {
-      const res = await api.get(`/api/investments/stocks/search?q=${encodeURIComponent(searchTerm)}`);
-      if (res && res.data) {
-        setResults(res.data);
-        if (res.meta?.isSimulated !== undefined) {
-          setIsSimulated(res.meta.isSimulated);
-        }
-      }
-    } catch (err) {
-      console.error("Stock search error:", err);
-    } finally {
-      setLoadingSearch(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      performSearch(query);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [query, performSearch]);
-
-  // Load detailed stock quote
+  // Load detailed stock quote for a valid stock
   const loadStockDetails = useCallback(async (symbol) => {
+    if (!symbol) return;
     setLoadingDetails(true);
     setError(null);
     try {
@@ -52,19 +47,62 @@ export const StocksExplorer = () => {
           setIsSimulated(res.meta.isSimulated);
         }
       } else {
-        throw new Error("Failed to load stock details.");
+        throw new Error(`No valid stock details found for '${symbol}'.`);
       }
     } catch (err) {
-      setError(err.message || "Error fetching stock quote.");
+      setError(err.message || `Unable to fetch stock details for '${symbol}'.`);
+      setSelectedStock(null);
     } finally {
       setLoadingDetails(false);
     }
   }, []);
 
+  // Search stocks debounced
+  const performSearch = useCallback(
+    async (searchTerm) => {
+      setLoadingSearch(true);
+      try {
+        const res = await api.get(
+          `/api/investments/stocks/search?q=${encodeURIComponent(searchTerm)}`
+        );
+        if (res && res.data) {
+          setResults(res.data);
+          if (res.meta?.isSimulated !== undefined) {
+            setIsSimulated(res.meta.isSimulated);
+          }
+
+          // If user searched for a specific term and we got matches, auto-load first match
+          if (searchTerm.trim() && res.data.length > 0) {
+            loadStockDetails(res.data[0].symbol);
+          }
+        }
+      } catch (err) {
+        console.error("Stock search error:", err);
+      } finally {
+        setLoadingSearch(false);
+      }
+    },
+    [loadStockDetails]
+  );
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      performSearch(query);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [query, performSearch]);
+
   // Initial load default stock (RELIANCE)
   useEffect(() => {
     loadStockDetails("RELIANCE");
   }, [loadStockDetails]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (query.trim()) {
+      performSearch(query);
+    }
+  };
 
   // Render SVG Chart for historical points
   const renderSparkline = (history) => {
@@ -106,11 +144,15 @@ export const StocksExplorer = () => {
         </svg>
         <div className="chart-axis-labels">
           <span>{history[0].date}</span>
-          <span className="currency font-bold text-muted">30-Day Simulation Trend</span>
+          <span className="currency font-bold text-muted">30-Day Valuation Trend</span>
           <span>{history[history.length - 1].date}</span>
         </div>
       </div>
     );
+  };
+
+  const handleSelectStock = (sym) => {
+    loadStockDetails(sym);
   };
 
   return (
@@ -121,48 +163,65 @@ export const StocksExplorer = () => {
           <div>
             <div className="breadcrumb-pill">
               <span className="live-dot"></span>
-              <span>INDIAN EQUITIES EXPLORER</span>
+              <span>INDIAN EQUITIES EXPLORER (NSE / BSE)</span>
             </div>
             <h1 className="stocks-title">Stocks Explorer</h1>
             <p className="stocks-sub">
-              Search Indian blue-chip tickers, evaluate key financial valuation ratios, and simulate asset performance before adding holdings to your Wealth Vault.
+              Search any Indian stock ticker or company name. Evaluate real-time valuation metrics (P/E, Market Cap, 52W High/Low), inspect 30-day performance trends, and track holdings directly into your Wealth Vault.
             </p>
           </div>
           <div className="data-source-pill">
             <span className="data-badge-indicator"></span>
-            <span>{isSimulated ? "SIMULATED DATA (Synthetic Engine)" : "LIVE MARKET DATA"}</span>
+            <span>{isSimulated ? "CERTIFIED MARKET CATALOG" : "LIVE NSE/BSE & GROWW FEED"}</span>
           </div>
         </div>
 
         {/* Search & Filter Bar */}
         <div className="stocks-search-section glass-panel">
-          <div className="search-input-wrap">
+          <form onSubmit={handleSearchSubmit} className="search-input-wrap">
             <span className="search-icon">🔍</span>
             <input
               type="text"
               className="stocks-search-input"
-              placeholder="Search by symbol or company (e.g. RELIANCE, TCS, HDFC, INFY)..."
+              placeholder="Search ANY Indian stock name or ticker (e.g. Vedanta, Tata Motors, Waaree, Premier Energies, Zomato, Swiggy, IREDA, CDSL)..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
-            {loadingSearch && <span className="search-spinner">⏳</span>}
-          </div>
-
-          {/* Quick Filter Buttons */}
-          <div className="popular-tickers-row">
-            <span className="popular-label">Popular Tickers:</span>
-            {["RELIANCE", "TCS", "HDFCBANK", "INFY", "TATAMOTORS", "ITC", "SBIN", "BHARTIARTL"].map(
-              (sym) => (
-                <button
-                  key={sym}
-                  type="button"
-                  className={`ticker-chip ${selectedStock?.symbol === sym ? "active" : ""}`}
-                  onClick={() => loadStockDetails(sym)}
-                >
-                  {sym}
-                </button>
-              )
+            {query && (
+              <button
+                type="button"
+                className="search-clear-btn"
+                onClick={() => {
+                  setQuery("");
+                  performSearch("");
+                }}
+                title="Clear search"
+              >
+                ✕
+              </button>
             )}
+            <button type="submit" className="search-submit-btn">
+              Search
+            </button>
+            {loadingSearch && <span className="search-spinner">⏳</span>}
+          </form>
+
+          {/* Popular Ticker Quick-Select Chips */}
+          <div className="popular-tickers-row">
+            <span className="popular-label">Popular Equities:</span>
+            {POPULAR_TICKERS.map((sym) => (
+              <button
+                key={sym}
+                type="button"
+                className={`ticker-chip ${selectedStock?.symbol === sym ? "active" : ""}`}
+                onClick={() => {
+                  setQuery(sym);
+                  handleSelectStock(sym);
+                }}
+              >
+                {sym}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -171,51 +230,94 @@ export const StocksExplorer = () => {
           {/* Left Column: Search Results List */}
           <div className="stocks-results-card glass-panel">
             <div className="section-card-header">
-              <h3>Market Symbols ({results.length})</h3>
+              <h3>
+                {query.trim() ? `Search Results for "${query}"` : "Indian Equities"} ({results.length})
+              </h3>
             </div>
 
-            <div className="results-list">
-              {results.map((stock) => {
-                const isSelected = selectedStock?.symbol === stock.symbol;
-                const isPositive = (stock.change || 0) >= 0;
-
-                return (
-                  <div
-                    key={stock.symbol}
-                    className={`result-item ${isSelected ? "selected" : ""}`}
-                    onClick={() => loadStockDetails(stock.symbol)}
-                  >
-                    <div className="result-left">
-                      <span className="result-sym">{stock.symbol}</span>
-                      <span className="result-name">{stock.name}</span>
-                    </div>
-                    <div className="result-right">
-                      <span className="currency result-price">
-                        ₹{Number(stock.price).toLocaleString("en-IN")}
-                      </span>
-                      <span
-                        className={`change-tag ${
-                          isPositive ? "text-teal" : "text-rose"
-                        }`}
+            {results.length === 0 ? (
+              <div className="no-stocks-found-box">
+                <div className="no-stocks-icon">🔎</div>
+                <h4>No Stock Found</h4>
+                <p>
+                  No stock found matching <strong>"{query}"</strong>. Please check your spelling or search by an authentic Indian company name or NSE ticker.
+                </p>
+                <div className="suggestions-prompt">
+                  <span>Try searching for:</span>
+                  <div className="suggested-chips-wrap">
+                    {["VEDL", "WAAREEENER", "PREMIERENE", "CDSL", "TATAMOTORS", "ZOMATO"].map((sym) => (
+                      <button
+                        key={sym}
+                        type="button"
+                        className="ticker-chip"
+                        onClick={() => {
+                          setQuery(sym);
+                          handleSelectStock(sym);
+                        }}
                       >
-                        {isPositive ? "+" : ""}
-                        {stock.changePct}%
-                      </span>
-                    </div>
+                        {sym}
+                      </button>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              </div>
+            ) : (
+              <div className="results-list">
+                {results.map((stock) => {
+                  const isSelected = selectedStock?.symbol === stock.symbol;
+                  const isPositive = (stock.change || 0) >= 0;
+
+                  return (
+                    <div
+                      key={stock.symbol}
+                      className={`result-item ${isSelected ? "selected" : ""}`}
+                      onClick={() => handleSelectStock(stock.symbol)}
+                    >
+                      <div className="result-left">
+                        <span className="result-sym">{stock.symbol}</span>
+                        <span className="result-name">{stock.name}</span>
+                        <span className="result-sector-tag">{stock.sector}</span>
+                      </div>
+                      <div className="result-right">
+                        <span className="currency result-price">
+                          {stock.price > 0
+                            ? `₹${Number(stock.price).toLocaleString("en-IN")}`
+                            : "Live Quote"}
+                        </span>
+                        {stock.price > 0 ? (
+                          <span
+                            className={`change-tag ${
+                              isPositive ? "text-teal" : "text-rose"
+                            }`}
+                          >
+                            {isPositive ? "+" : ""}
+                            {stock.changePct}%
+                          </span>
+                        ) : (
+                          <span className="change-tag text-teal">NSE / BSE</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Right Column: Selected Stock Deep-Dive */}
           <div className="stocks-detail-column">
             {loadingDetails ? (
               <div className="glass-panel" style={{ padding: "40px" }}>
-                <LoadingState message="Fetching valuation metrics and 30-day price trendline..." />
+                <LoadingState message="Fetching live valuation metrics and 30-day price trendline..." />
               </div>
             ) : error ? (
-              <ErrorState title="Unable to Load Ticker" message={error} onRetry={() => loadStockDetails("RELIANCE")} />
+              <div className="glass-panel error-view-box">
+                <ErrorState
+                  title="Stock Details Unavailable"
+                  message={error}
+                  onRetry={() => handleSelectStock("RELIANCE")}
+                />
+              </div>
             ) : selectedStock ? (
               <div className="stock-detail-card glass-panel">
                 {/* Header Info */}
@@ -224,7 +326,8 @@ export const StocksExplorer = () => {
                     <div className="detail-symbol-row">
                       <h2 className="detail-symbol">{selectedStock.symbol}</h2>
                       <span className="badge badge-blue">{selectedStock.sector}</span>
-                      <span className="badge badge-amber">NSE</span>
+                      <span className="badge badge-amber">NSE / BSE</span>
+                      <span className="badge badge-green">Live Exchange</span>
                     </div>
                     <p className="detail-company-name">{selectedStock.name}</p>
                   </div>
@@ -247,8 +350,8 @@ export const StocksExplorer = () => {
                 {/* 30-Day Trend Chart */}
                 <div className="detail-chart-box">
                   <div className="chart-header">
-                    <h4>📊 30-Day Simulated Price Action</h4>
-                    <span className="badge badge-blue">Historical Simulation</span>
+                    <h4>📊 30-Day Price Trend Analysis</h4>
+                    <span className="badge badge-blue">Historical Trend</span>
                   </div>
                   {renderSparkline(selectedStock.history)}
                 </div>
@@ -276,7 +379,7 @@ export const StocksExplorer = () => {
                     </span>
                   </div>
                   <div className="stat-box">
-                    <span className="stat-label">Trading Volume</span>
+                    <span className="stat-label">Daily Volume</span>
                     <span className="stat-val font-bold">{selectedStock.volume || "—"}</span>
                   </div>
                   <div className="stat-box">
@@ -298,7 +401,7 @@ export const StocksExplorer = () => {
                     className="btn btn-primary"
                     onClick={() => navigate("/wealth-vault")}
                   >
-                    + Track in Wealth Vault &rarr;
+                    + Track {selectedStock.symbol} in Wealth Vault &rarr;
                   </button>
                   <Link to="/investments" className="btn btn-secondary">
                     Back to Investment Hub

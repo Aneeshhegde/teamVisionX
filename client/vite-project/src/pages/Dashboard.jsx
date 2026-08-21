@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
-import { LoadingState, ErrorState, EmptyState } from "../components/common/StateViews";
+import { LoadingState, ErrorState } from "../components/common/StateViews";
 import api from "../utils/apiClient";
 import "./Dashboard.css";
 
 export const Dashboard = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,7 +19,7 @@ export const Dashboard = () => {
       if (res && res.data) {
         setData(res.data);
       } else {
-        throw new Error(res.message || "Failed to load command center data");
+        throw new Error(res?.message || "Failed to load command center data");
       }
     } catch (err) {
       setError(err.message || "Error connecting to WealthX intelligence server.");
@@ -51,21 +52,24 @@ export const Dashboard = () => {
     );
   }
 
-  if (!data || !data.isOnboarded) {
-    return (
-      <AppLayout>
-        <EmptyState
-          icon="🚀"
-          title="Financial Profile Pending Calibration"
-          description="Complete the 2-minute onboarding to calculate your true net worth, emergency runway, and financial health score."
-          actionText="Start 2-Minute Onboarding →"
-          onAction={() => (window.location.href = "/onboarding")}
-        />
-      </AppLayout>
-    );
-  }
-
-  const { metrics, profile, recentAlerts, user } = data;
+  const metrics = data?.metrics || {
+    healthScore: 50,
+    netWorth: 0,
+    totalAssets: 0,
+    totalLiabilities: 0,
+    monthlyIncome: 0,
+    monthlyExpenses: 0,
+    monthlySurplus: 0,
+    savingsRate: 0,
+    expenseRatio: 0,
+    emergencyFundMonths: 0,
+    assetsCount: 0,
+    goalsCount: 0,
+  };
+  const profile = data?.profile || {};
+  const recentAlerts = data?.recentAlerts || [];
+  const user = data?.user || {};
+  const isOnboarded = Boolean(data?.isOnboarded);
 
   const getScoreColor = (score) => {
     if (score >= 80) return "teal";
@@ -74,11 +78,31 @@ export const Dashboard = () => {
     return "rose";
   };
 
-  const scoreBadgeColor = getScoreColor(metrics.healthScore);
+  const scoreBadgeColor = getScoreColor(metrics.healthScore || 50);
 
   return (
     <AppLayout disclaimerVariant="general">
       <div className="dashboard-view">
+        {/* Onboarding Incomplete Banner (if not calibrated) */}
+        {!isOnboarded && (
+          <div className="calibration-notice-banner glass-panel">
+            <div className="notice-left">
+              <span className="notice-icon">🚀</span>
+              <div>
+                <h4>Financial Profile Pending Calibration</h4>
+                <p>Complete the 2-minute onboarding to calculate your true net worth, emergency runway, and personalized health score.</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => navigate("/onboarding")}
+            >
+              Calibrate Profile &rarr;
+            </button>
+          </div>
+        )}
+
         {/* Top Welcome & Health Header */}
         <div className="dashboard-banner glass-panel">
           <div className="banner-left">
@@ -97,12 +121,15 @@ export const Dashboard = () => {
               <Link to="/action-plan" className="btn btn-secondary btn-quick-action">
                 📋 Action Plan
               </Link>
+              <Link to="/investments/stocks" className="btn btn-secondary btn-quick-action">
+                ⚡ Stocks Explorer
+              </Link>
             </div>
           </div>
 
           <div className="banner-right">
             <div className={`health-score-dial dial-${scoreBadgeColor}`}>
-              <div className="score-number">{metrics.healthScore}</div>
+              <div className="score-number">{metrics.healthScore || 50}</div>
               <div className="score-max">/100</div>
               <span className={`badge badge-${scoreBadgeColor} score-pill`}>
                 {metrics.healthScore >= 75
@@ -158,8 +185,8 @@ export const Dashboard = () => {
               ₹{Number(metrics.monthlyExpenses || 0).toLocaleString("en-IN")}
             </div>
             <div className="metric-footer">
-              <span className={metrics.expenseRatio > 70 ? "text-rose" : "text-teal"}>
-                {metrics.expenseRatio}% of income
+              <span className={(metrics.expenseRatio || 0) > 70 ? "text-rose" : "text-teal"}>
+                {metrics.expenseRatio || 0}% of income
               </span>
               <span className="footer-sep">•</span>
               <span className="text-muted">Surplus: ₹{Number(metrics.monthlySurplus || 0).toLocaleString("en-IN")}</span>
@@ -173,11 +200,11 @@ export const Dashboard = () => {
               <span className="metric-icon">🛡️</span>
             </div>
             <div className="metric-value">
-              {metrics.emergencyFundMonths} <span className="value-unit">Months</span>
+              {metrics.emergencyFundMonths || 0} <span className="value-unit">Months</span>
             </div>
             <div className="metric-footer">
-              <span className={metrics.emergencyFundMonths >= 6 ? "text-teal" : metrics.emergencyFundMonths >= 3 ? "text-amber" : "text-rose"}>
-                {metrics.emergencyFundMonths >= 6 ? "Well Protected" : metrics.emergencyFundMonths >= 3 ? "Adequate (3-6m target)" : "Critically Low (<3m)"}
+              <span className={(metrics.emergencyFundMonths || 0) >= 6 ? "text-teal" : (metrics.emergencyFundMonths || 0) >= 3 ? "text-amber" : "text-rose"}>
+                {(metrics.emergencyFundMonths || 0) >= 6 ? "Well Protected" : (metrics.emergencyFundMonths || 0) >= 3 ? "Adequate (3-6m target)" : "Critically Low (<3m)"}
               </span>
             </div>
           </div>
@@ -196,7 +223,7 @@ export const Dashboard = () => {
               <div className="alerts-list">
                 {recentAlerts && recentAlerts.length > 0 ? (
                   recentAlerts.map((alert) => (
-                    <div key={alert.id} className={`alert-item alert-${alert.type}`}>
+                    <div key={alert.id} className={`alert-item alert-${alert.type || "info"}`}>
                       <div className="alert-badge-icon">
                         {alert.type === "warning" ? "⚠️" : alert.type === "success" ? "✅" : "ℹ️"}
                       </div>
@@ -224,24 +251,24 @@ export const Dashboard = () => {
               </div>
               <div className="cashflow-bars">
                 <div className="bar-label-group">
-                  <span>Expenses Burn Rate ({metrics.expenseRatio}%)</span>
+                  <span>Expenses Burn Rate ({metrics.expenseRatio || 0}%)</span>
                   <span className="currency">₹{Number(metrics.monthlyExpenses || 0).toLocaleString("en-IN")}</span>
                 </div>
                 <div className="progress-track">
                   <div
                     className="progress-fill fill-rose"
-                    style={{ width: `${Math.min(metrics.expenseRatio, 100)}%` }}
+                    style={{ width: `${Math.min(metrics.expenseRatio || 0, 100)}%` }}
                   ></div>
                 </div>
 
                 <div className="bar-label-group" style={{ marginTop: "16px" }}>
-                  <span>Monthly Savings Surplus ({metrics.savingsRate}%)</span>
+                  <span>Monthly Savings Surplus ({metrics.savingsRate || 0}%)</span>
                   <span className="currency">₹{Number(metrics.monthlySurplus || 0).toLocaleString("en-IN")}</span>
                 </div>
                 <div className="progress-track">
                   <div
                     className="progress-fill fill-teal"
-                    style={{ width: `${Math.min(metrics.savingsRate, 100)}%` }}
+                    style={{ width: `${Math.min(metrics.savingsRate || 0, 100)}%` }}
                   ></div>
                 </div>
               </div>
@@ -252,7 +279,7 @@ export const Dashboard = () => {
           <div className="column-right">
             <div className="section-card glass-panel">
               <div className="section-card-header">
-                <h3>🧭 WealthX Decision Lab & Tools</h3>
+                <h3>🧭 WealthX Command Launchpad</h3>
               </div>
 
               <div className="launchpad-grid">
@@ -268,39 +295,39 @@ export const Dashboard = () => {
                   <div className="launchpad-icon">🔬</div>
                   <div className="launchpad-details">
                     <h4>Financial X-Ray</h4>
-                    <p>Deep-dive liquidity, debt-to-income & stress tests.</p>
+                    <p>Deep-dive liquidity, savings rate, and risk exposure.</p>
                   </div>
                 </Link>
 
-                <Link to="/ai-decision-lab" className="launchpad-card launchpad-highlight">
-                  <div className="launchpad-icon">🤖</div>
+                <Link to="/investments/stocks" className="launchpad-card launchpad-highlight">
+                  <div className="launchpad-icon">⚡</div>
                   <div className="launchpad-details">
-                    <h4>AI Decision Lab</h4>
-                    <p>Simulate financial questions with structured AI guardrails.</p>
+                    <h4>Stocks Explorer</h4>
+                    <p>Search verified Indian equities with key valuation ratios.</p>
                   </div>
                 </Link>
 
-                <Link to="/calculators/sip" className="launchpad-card">
-                  <div className="launchpad-icon">📈</div>
+                <Link to="/investments/sip" className="launchpad-card">
+                  <div className="launchpad-icon">🌱</div>
                   <div className="launchpad-details">
                     <h4>SIP & Compounding</h4>
-                    <p>Simulate wealth growth with Step-Up SIP calculator.</p>
+                    <p>Learn mutual funds, SIP compounding & tax saving.</p>
                   </div>
                 </Link>
 
-                <Link to="/loans/debt-health" className="launchpad-card">
-                  <div className="launchpad-icon">💳</div>
+                <Link to="/goals" className="launchpad-card">
+                  <div className="launchpad-icon">🎯</div>
                   <div className="launchpad-details">
-                    <h4>Loan & EMI Health</h4>
-                    <p>Analyze debt burden and accelerated payoff schedules.</p>
+                    <h4>Financial Goals</h4>
+                    <p>Track milestones and required monthly contributions.</p>
                   </div>
                 </Link>
 
-                <Link to="/schemes" className="launchpad-card">
-                  <div className="launchpad-icon">🏛️</div>
+                <Link to="/action-plan" className="launchpad-card">
+                  <div className="launchpad-icon">📋</div>
                   <div className="launchpad-details">
-                    <h4>Govt Schemes Finder</h4>
-                    <p>Discover eligible central and state welfare initiatives.</p>
+                    <h4>Action Plan</h4>
+                    <p>Prioritized to-dos generated from your financial profile.</p>
                   </div>
                 </Link>
               </div>

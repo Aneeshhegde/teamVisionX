@@ -58,6 +58,8 @@
     outline: none;
     color: white;
     background: rgba(255, 255, 255, 0.08);
+    font-size: 14.5px;
+    box-sizing: border-box;
 }
 
 .login-page .card input::placeholder {
@@ -69,7 +71,50 @@
     box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.14);
 }
 
-.login-page .card button {
+/* Password input wrapper */
+.password-input-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper input {
+    width: 100%;
+    padding-right: 48px !important;
+}
+
+.password-toggle-btn {
+    position: absolute !important;
+    right: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: rgba(255, 255, 255, 0.65) !important;
+    z-index: 5 !important;
+    transition: color 0.2s ease, background-color 0.2s ease !important;
+}
+
+.password-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    transform: translateY(-50%) !important;
+    box-shadow: none !important;
+}
+
+.login-page .card button[type="submit"] {
     width: 100%;
     height: 50px;
     border: none;
@@ -77,17 +122,17 @@
     cursor: pointer;
     background: linear-gradient(135deg, #58a6ff, #3b82f6);
     color: white;
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.login-page .card button:hover {
+.login-page .card button[type="submit"]:hover {
     transform: translateY(-1px);
     box-shadow: 0 10px 22px rgba(88, 166, 255, 0.25);
 }
 
-.login-page .card button:disabled {
+.login-page .card button[type="submit"]:disabled {
     opacity: 0.75;
     cursor: not-allowed;
     transform: none;
@@ -102,6 +147,9 @@
     font-size: 14px;
     text-align: left;
     cursor: pointer;
+    border: none;
+    box-shadow: none;
+    width: auto;
 }
 
 .login-page .card .status {

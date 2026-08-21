@@ -66,9 +66,17 @@ function App() {
             }
           />
           <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Onboarding />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/dashboard"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
             }
@@ -76,7 +84,7 @@ function App() {
           <Route
             path="/wealth-vault"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <WealthVault />
               </ProtectedRoute>
             }
@@ -84,7 +92,7 @@ function App() {
           <Route
             path="/goals"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <Goals />
               </ProtectedRoute>
             }
@@ -92,7 +100,7 @@ function App() {
           <Route
             path="/financial-xray"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <FinancialXRay />
               </ProtectedRoute>
             }
@@ -100,7 +108,7 @@ function App() {
           <Route
             path="/action-plan"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <ActionPlan />
               </ProtectedRoute>
             }
@@ -108,7 +116,7 @@ function App() {
           <Route
             path="/investments"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <InvestmentHub />
               </ProtectedRoute>
             }
@@ -116,7 +124,7 @@ function App() {
           <Route
             path="/investments/stocks"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <StocksExplorer />
               </ProtectedRoute>
             }
@@ -124,7 +132,7 @@ function App() {
           <Route
             path="/investments/sip"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <InvestmentEduPage defaultCategory="sip" />
               </ProtectedRoute>
             }
@@ -132,7 +140,7 @@ function App() {
           <Route
             path="/investments/gold"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <InvestmentEduPage defaultCategory="gold" />
               </ProtectedRoute>
             }
@@ -140,7 +148,7 @@ function App() {
           <Route
             path="/investments/fd"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <InvestmentEduPage defaultCategory="fd" />
               </ProtectedRoute>
             }
@@ -148,7 +156,7 @@ function App() {
           <Route
             path="/investments/bonds"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <InvestmentEduPage defaultCategory="bonds" />
               </ProtectedRoute>
             }
@@ -156,7 +164,7 @@ function App() {
           <Route
             path="/investments/etfs"
             element={
-              <ProtectedRoute requireOnboarded={true}>
+              <ProtectedRoute>
                 <InvestmentEduPage defaultCategory="etfs" />
               </ProtectedRoute>
             }

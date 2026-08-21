@@ -31,11 +31,11 @@
   gap: 8px;
   padding: 6px 14px;
   border-radius: var(--radius-full);
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
   font-size: 11.5px;
   font-weight: 700;
-  color: #fbbf24;
+  color: #10b981;
   letter-spacing: 0.04em;
 }
 
@@ -43,8 +43,8 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #fbbf24;
-  box-shadow: 0 0 8px #fbbf24;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
 }
 
 /* Search Section */
@@ -71,12 +71,54 @@
 
 .stocks-search-input {
   padding-left: 46px !important;
+  padding-right: 50px !important;
   font-size: 14.5px;
+}
+
+.search-clear-btn {
+  position: absolute;
+  right: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: var(--text-muted);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: var(--transition-smooth);
+}
+
+.search-clear-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+}
+
+.search-submit-btn {
+  position: absolute;
+  right: 8px;
+  background: var(--accent-primary, #2563eb);
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm, 6px);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.search-submit-btn:hover {
+  background: #1d4ed8;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
 }
 
 .search-spinner {
   position: absolute;
-  right: 16px;
+  right: 130px;
   font-size: 14px;
 }
 
@@ -103,6 +145,7 @@
   font-weight: 700;
   font-family: var(--font-mono);
   transition: var(--transition-smooth);
+  cursor: pointer;
 }
 
 .ticker-chip:hover {
@@ -115,12 +158,13 @@
   background: rgba(37, 99, 235, 0.25);
   border-color: var(--accent-primary);
   color: #fff;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
 }
 
 /* Layout Grid */
 .stocks-layout-grid {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 340px 1fr;
   gap: 24px;
 }
 
@@ -131,7 +175,7 @@
   flex-direction: column;
   gap: 14px;
   height: fit-content;
-  max-height: 600px;
+  max-height: 650px;
 }
 
 .results-list {
@@ -169,6 +213,7 @@
 .result-left {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .result-sym {
@@ -181,7 +226,16 @@
 .result-name {
   font-size: 11.5px;
   color: var(--text-muted);
-  max-width: 140px;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-sector-tag {
+  font-size: 10px;
+  color: #93c5fd;
+  max-width: 150px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -191,6 +245,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  gap: 2px;
 }
 
 .result-price {
@@ -202,6 +257,53 @@
   font-size: 11px;
   font-weight: 700;
   font-family: var(--font-mono);
+}
+
+/* Empty / No Stocks Found State */
+.no-stocks-found-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 30px 16px;
+  gap: 12px;
+}
+
+.no-stocks-icon {
+  font-size: 32px;
+}
+
+.no-stocks-found-box h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.no-stocks-found-box p {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.suggestions-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.suggestions-prompt span {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+.suggested-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
 }
 
 /* Detail Column */
@@ -233,6 +335,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 4px;
+  flex-wrap: wrap;
 }
 
 .detail-symbol {
@@ -359,6 +462,10 @@
   padding-top: 10px;
   border-top: 1px solid var(--border-subtle);
   flex-wrap: wrap;
+}
+
+.error-view-box {
+  padding: 30px;
 }
 
 @media (max-width: 900px) {

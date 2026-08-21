@@ -49,11 +49,6 @@ export const AppLayout = ({ children, disclaimerVariant = "general" }) => {
           </div>
 
           <div className="header-right">
-            <div className="market-ticker-pill">
-              <span className="ticker-pulse"></span>
-              <span className="ticker-text">NSE Simulation Live</span>
-            </div>
-
             <div className="user-profile-menu">
               <button
                 type="button"

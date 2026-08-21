@@ -4,6 +4,43 @@
   gap: 24px;
 }
 
+/* Calibration Notice Banner */
+.calibration-notice-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 24px;
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--accent-primary);
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+  flex-wrap: wrap;
+}
+
+.notice-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.notice-icon {
+  font-size: 28px;
+}
+
+.notice-left h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.notice-left p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  max-width: 600px;
+}
+
 /* Banner */
 .dashboard-banner {
   padding: 28px 32px;

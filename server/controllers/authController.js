@@ -75,10 +75,13 @@ const signup = async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email });
+    const cleanEmail = email.toLowerCase().trim();
+    const cleanName = name.trim();
+
+    const existingUser = await User.findOne({ email: cleanEmail });
     if (existingUser) {
       return res.status(409).json({
-        message: "Email already registered",
+        message: "Email already registered. Please sign in instead.",
       });
     }
 
@@ -87,13 +90,26 @@ const signup = async (req, res) => {
 
     // Create user
     const user = await User.create({
-      name,
-      email,
+      name: cleanName,
+      email: cleanEmail,
       password: hashedPassword,
     });
 
+    // Generate JWT Token
+    const token = jwt.sign(
+      {
+        id: user._id,
+        role: user.role || "user",
+      },
+      process.env.JWT_SECRET || "default_jwt_secret_wealthx",
+      {
+        expiresIn: "7d",
+      }
+    );
+
     res.status(201).json({
-      message: "User created successfully",
+      message: "Account created successfully",
+      token,
       user: {
         id: user._id,
         name: user.name,
@@ -111,7 +127,6 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    // Get email and password from request
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -120,8 +135,10 @@ const login = async (req, res) => {
       });
     }
 
+    const cleanEmail = email.toLowerCase().trim();
+
     // Find user by email
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: cleanEmail });
 
     // Check if user exists
     if (!user) {
@@ -146,9 +163,9 @@ const login = async (req, res) => {
         id: user._id,
         role: user.role || "user",
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || "default_jwt_secret_wealthx",
       {
-        expiresIn: "1d",
+        expiresIn: "7d",
       }
     );
 
@@ -211,7 +228,8 @@ const forgotPassword = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const cleanEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: cleanEmail });
 
     if (!user) {
       return res.status(404).json({
@@ -266,7 +284,8 @@ const verifyOtp = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const cleanEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: cleanEmail });
 
     if (!user || !user.resetOtp || !user.resetOtpExpires) {
       return res.status(400).json({
@@ -274,7 +293,7 @@ const verifyOtp = async (req, res) => {
       });
     }
 
-    if (user.resetOtp !== otp) {
+    if (user.resetOtp !== String(otp).trim()) {
       return res.status(400).json({
         message: "Invalid OTP",
       });
@@ -306,7 +325,8 @@ const resetPassword = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const cleanEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: cleanEmail });
 
     if (!user || !user.resetOtp || !user.resetOtpExpires) {
       return res.status(400).json({
@@ -314,7 +334,7 @@ const resetPassword = async (req, res) => {
       });
     }
 
-    if (user.resetOtp !== otp) {
+    if (user.resetOtp !== String(otp).trim()) {
       return res.status(400).json({
         message: "Invalid OTP",
       });
