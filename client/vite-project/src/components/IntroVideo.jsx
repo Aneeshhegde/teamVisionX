@@ -29,6 +29,7 @@ function IntroVideo({ onFinish }) {
         muted
         playsInline
         onEnded={handleVideoEnd}
+        onError={handleSkip}
         className={fade ? "video fade" : "video"}
       >
         <source src={introVideo} type="video/mp4" />

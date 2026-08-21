@@ -66,44 +66,123 @@
 .sidebar-nav-container {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 12px;
+  padding: 18px 12px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.nav-section {
+/* Standalone Group (Command Center) */
+.nav-standalone-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
-.nav-section-title {
+.nav-group-caption {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0 10px;
+}
+
+.nav-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-teal);
+  box-shadow: 0 0 6px var(--accent-teal);
+  margin-left: auto;
+}
+
+/* Accordion Container & Sections */
+.nav-accordion-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav-accordion-section {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-smooth);
+}
+
+.nav-accordion-section.section-open {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Accordion Button Header (Entire header clickable) */
+.nav-accordion-header {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 10px;
-  font-size: 11px;
+  padding: 9px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 11.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-muted);
   cursor: pointer;
-  border-radius: 4px;
+  text-align: left;
   transition: var(--transition-smooth);
 }
-.nav-section-title:hover {
-  color: var(--text-secondary);
+
+.nav-accordion-header:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
 }
 
-.section-chevron {
-  font-size: 10px;
+.nav-accordion-header.active-header {
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.08);
+  border-color: rgba(6, 182, 212, 0.2);
 }
 
+.header-title-text {
+  flex: 1;
+}
+
+/* Chevron Icon & Smooth 90deg Rotation */
+.header-chevron {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
+  line-height: 1;
+}
+
+.header-chevron.chevron-open {
+  transform: rotate(90deg);
+  color: var(--accent-cyan);
+}
+
+/* Sub-items list */
 .nav-items-list {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  padding: 4px 0 6px 0;
+  animation: accordionSlideDown 0.2s ease forwards;
+}
+
+@keyframes accordionSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .nav-link {
@@ -116,6 +195,11 @@
   font-size: 13.5px;
   font-weight: 500;
   transition: var(--transition-smooth);
+}
+
+.nav-child-link {
+  padding-left: 24px;
+  font-size: 13px;
 }
 
 .nav-link:hover {
@@ -145,21 +229,14 @@
   text-overflow: ellipsis;
 }
 
-.nav-link-disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  user-select: none;
-}
-
-.nav-link-disabled:hover {
-  background-color: transparent !important;
-  color: var(--text-secondary) !important;
-}
-
-.nav-badge-muted {
-  background: rgba(255, 255, 255, 0.08) !important;
-  color: var(--text-muted) !important;
-  border: 1px solid var(--border-subtle);
+.nav-badge-cyan {
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
 }
 
 .sidebar-footer {
@@ -198,8 +275,8 @@
   font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
-  text-overflow: ellipsis;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .user-role {
@@ -209,28 +286,29 @@
 
 .mobile-close-btn {
   background: transparent;
-  color: var(--text-secondary);
+  border: none;
+  color: var(--text-muted);
   font-size: 18px;
-  padding: 4px 8px;
+  cursor: pointer;
+  display: none;
 }
 
-/* Responsive sidebar */
 @media (max-width: 1024px) {
   .app-sidebar {
     transform: translateX(-100%);
   }
   .app-sidebar.mobile-open {
     transform: translateX(0);
-    box-shadow: var(--shadow-lg);
   }
-  .sidebar-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(4px);
-    z-index: 90;
+  .mobile-close-btn {
+    display: block;
   }
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: 99;
 }

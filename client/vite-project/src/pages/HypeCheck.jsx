@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 import ProgressRing from "../components/charts/ProgressRing";
 import { LoadingState, ErrorState } from "../components/common/StateViews";
@@ -6,6 +7,7 @@ import api from "../utils/apiClient";
 import "./HypeCheck.css";
 
 export const HypeCheck = () => {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("nifty50");
   const [trending, setTrending] = useState([]);
   const [result, setResult] = useState(null);
@@ -57,6 +59,14 @@ export const HypeCheck = () => {
     analyzeAsset(query);
   };
 
+  const handleAskAIAboutHype = (assetName) => {
+    navigate("/ai-decision-lab", {
+      state: {
+        presetQuery: `What are the structural speculative risks of investing in ${assetName}? Should I avoid it given my financial stage?`,
+      },
+    });
+  };
+
   const getHypeColor = (score) => {
     if (score > 65) return "#f43f5e"; // Red (High Hype)
     if (score > 30) return "#f59e0b"; // Amber (Caution)
@@ -64,6 +74,7 @@ export const HypeCheck = () => {
   };
 
   const scoreColor = result ? getHypeColor(result.hypeScore) : "#10b981";
+  const liveMarket = result?.liveMarketData;
 
   return (
     <AppLayout disclaimerVariant="general">
@@ -72,11 +83,11 @@ export const HypeCheck = () => {
         <div className="hype-header">
           <div className="breadcrumb-pill">
             <span className="live-dot"></span>
-            <span>SOCIAL MEDIA FOMO & SPECULATION FILTER</span>
+            <span>LIVE FINANCIAL FOMO & SPECULATION FILTER</span>
           </div>
           <h1 className="hype-title">Investment Hype Check</h1>
           <p className="hype-sub">
-            Filter out social-media euphoria, unverified telegram tips, and meme momentum by evaluating underlying cashflows, valuation reality, and structural drawdown risks.
+            Filter out social-media euphoria, unverified Telegram tips, and speculative bubble momentum using real-time market data APIs (Groww, Yahoo Finance, Binance) and quantitative forensic metrics.
           </p>
         </div>
 
@@ -84,15 +95,15 @@ export const HypeCheck = () => {
         <div className="hype-search-card glass-panel">
           <form onSubmit={handleSearchSubmit} className="hype-search-form">
             <div className="hype-input-wrapper">
-              <span className="search-icon">🔎</span>
+              <span className="hype-search-icon">🔍</span>
               <input
                 type="text"
-                placeholder="Search any stock, crypto, ETF, or asset topic (e.g. Dogecoin, Options Trading, Nifty 50, Tata Motors)..."
+                placeholder="Search any stock, crypto, ETF, or asset topic (e.g. Dogecoin, Suzlon, Zomato, Nifty 50, F&O Options)..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="hype-input-field"
               />
-              <button type="submit" className="btn btn-primary" style={{ padding: "8px 20px", fontSize: "13px" }}>
+              <button type="submit" className="btn btn-primary btn-hype-submit">
                 Run Hype Audit &rarr;
               </button>
             </div>
@@ -108,7 +119,10 @@ export const HypeCheck = () => {
                 className={`trending-chip ${query.toLowerCase() === t.key ? "active" : ""}`}
                 onClick={() => handleSelectTrending(t.key)}
               >
-                {t.name}
+                <span>{t.name}</span>
+                {t.livePrice && (
+                  <span className="trending-price-tag font-mono">{t.livePrice}</span>
+                )}
               </button>
             ))}
           </div>
@@ -116,7 +130,7 @@ export const HypeCheck = () => {
 
         {/* Results Box */}
         {loading ? (
-          <LoadingState message="Auditing cash flows, valuation multiples, retail frenzy, and historical drawdowns..." />
+          <LoadingState message="Auditing live cash flows, valuation multiples, retail frenzy, and historical drawdowns..." />
         ) : error ? (
           <ErrorState title="Hype Check Engine Offline" message={error} onRetry={() => analyzeAsset(query)} />
         ) : result ? (
@@ -136,8 +150,8 @@ export const HypeCheck = () => {
                     <span className="welcome-tag" style={{ color: scoreColor }}>
                       {result.category}
                     </span>
-                    <span className="badge badge-amber" style={{ fontSize: "10px" }}>
-                      {result.engineTag || "SIMULATED ANALYTICAL ENGINE"}
+                    <span className="badge badge-green font-mono" style={{ fontSize: "10px" }}>
+                      ● {result.engineTag || "LIVE DATA FEED"}
                     </span>
                   </div>
                   <h2 className="hype-asset-name">{result.name}</h2>
@@ -148,6 +162,61 @@ export const HypeCheck = () => {
                 </div>
               </div>
             </div>
+
+            {/* 📊 LIVE REAL-TIME DATA CARD */}
+            {liveMarket && (
+              <div className="hype-live-metrics-card glass-panel">
+                <div className="hype-live-header">
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span className="live-pulse-dot"></span>
+                    <span className="font-bold text-cyan" style={{ fontSize: "12.5px", textTransform: "uppercase" }}>
+                      Live Market Indicators ({liveMarket.source || "Live Feed"})
+                    </span>
+                  </div>
+                </div>
+
+                <div className="hype-live-grid">
+                  {liveMarket.price && (
+                    <div className="live-stat-pill">
+                      <span className="text-muted" style={{ fontSize: "11px" }}>Current Market Price</span>
+                      <div className="font-mono font-bold text-teal" style={{ fontSize: "18px" }}>
+                        {liveMarket.price}
+                      </div>
+                      {liveMarket.secondaryPrice && (
+                        <span className="text-muted" style={{ fontSize: "11px" }}>({liveMarket.secondaryPrice})</span>
+                      )}
+                    </div>
+                  )}
+
+                  {liveMarket.dayChange && (
+                    <div className="live-stat-pill">
+                      <span className="text-muted" style={{ fontSize: "11px" }}>24h Delta / Stat</span>
+                      <div className="font-mono font-bold" style={{ fontSize: "16px", color: liveMarket.dayChange.includes("-") ? "#f43f5e" : "#10b981" }}>
+                        {liveMarket.dayChange}
+                      </div>
+                    </div>
+                  )}
+
+                  {liveMarket.peRatio && (
+                    <div className="live-stat-pill">
+                      <span className="text-muted" style={{ fontSize: "11px" }}>Valuation Ratio</span>
+                      <div className="font-mono font-bold text-cyan" style={{ fontSize: "15px" }}>
+                        {liveMarket.peRatio}
+                      </div>
+                    </div>
+                  )}
+
+                  {liveMarket.volume && (
+                    <div className="live-stat-pill">
+                      <span className="text-muted" style={{ fontSize: "11px" }}>Trading Liquidity / Detail</span>
+                      <div className="font-mono font-bold" style={{ fontSize: "14px" }}>
+                        {liveMarket.volume}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* 6 Structural Dimension Cards */}
             <div className="dimensions-section">
@@ -169,10 +238,25 @@ export const HypeCheck = () => {
               </div>
             </div>
 
-            {/* Final Takeaway Recommendation */}
+            {/* Final Takeaway Recommendation & Ask AI Action */}
             <div className="hype-takeaway-card glass-panel">
-              <span className="welcome-tag text-teal">WealthX Verdict</span>
-              <h4 className="takeaway-text">{result.recommendation}</h4>
+              <div>
+                <span className="welcome-tag text-teal">WealthX Verdict</span>
+                <h4 className="takeaway-text">{result.recommendation}</h4>
+              </div>
+              <div style={{ marginTop: "14px", display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{ fontWeight: 800, padding: "10px 20px" }}
+                  onClick={() => handleAskAIAboutHype(result.name)}
+                >
+                  🤖 ASK AI DECISION LAB ABOUT THIS &rarr;
+                </button>
+                <Link to="/action-plan" className="btn btn-secondary" style={{ padding: "10px 18px" }}>
+                  View Safe Action Plan &rarr;
+                </Link>
+              </div>
             </div>
           </div>
         ) : null}

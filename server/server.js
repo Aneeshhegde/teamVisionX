@@ -20,6 +20,7 @@ const hypeCheckRoutes = require("./routes/hypeCheckRoutes");
 const schemesRoutes = require("./routes/schemesRoutes");
 const historyRoutes = require("./routes/historyRoutes");
 const mutualFundRoutes = require("./routes/mutualFundRoutes");
+const investorQuestRoutes = require("./routes/investorQuestRoutes");
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use("/api/hype-check", hypeCheckRoutes);
 app.use("/api/schemes", schemesRoutes);
 app.use("/api/history", historyRoutes);
 app.use("/api/mutual-funds", mutualFundRoutes);
+app.use("/api/investor-quest", investorQuestRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend is Running 🚀");

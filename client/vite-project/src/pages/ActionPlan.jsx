@@ -129,8 +129,8 @@ export const ActionPlan = () => {
             <Link to="/financial-xray" className="btn btn-secondary">
               Inspect Financial X-Ray &rarr;
             </Link>
-            <Link to="/ai-decision-lab" className="btn btn-primary">
-              Ask AI Decision Lab &rarr;
+            <Link to="/ai-decision-lab" className="btn btn-primary" style={{ fontWeight: 800, letterSpacing: "0.02em" }}>
+              🤖 ASK AI &rarr;
             </Link>
           </div>
         </div>
@@ -228,10 +228,10 @@ export const ActionPlan = () => {
                     <button
                       type="button"
                       className="btn btn-secondary"
-                      style={{ padding: "10px 18px", fontSize: "13px" }}
+                      style={{ padding: "10px 18px", fontSize: "13px", fontWeight: 800 }}
                       onClick={() => handleAskAI(topPriority.aiPrompt)}
                     >
-                      🤖 Ask WealthX AI About This &rarr;
+                      🤖 ASK WEALTHX AI &rarr;
                     </button>
                   )}
                 </div>
@@ -358,11 +358,11 @@ export const ActionPlan = () => {
                       <button
                         type="button"
                         className="btn btn-secondary"
-                        style={{ padding: "8px 12px", fontSize: "12px" }}
+                        style={{ padding: "8px 12px", fontSize: "12px", fontWeight: 800 }}
                         onClick={() => handleAskAI(action.aiPrompt)}
                         title="Ask AI Decision Lab"
                       >
-                        🤖 Ask AI
+                        🤖 ASK AI
                       </button>
                     )}
                   </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import { ProtectedRoute, PublicOnlyRoute } from "./components/ProtectedRoute";
 
 import Home from "./pages/Home";
@@ -31,6 +32,8 @@ import FutureYou from "./pages/FutureYou";
 import HypeCheck from "./pages/HypeCheck";
 import GovernmentSchemes from "./pages/GovernmentSchemes";
 import FinancialHistory from "./pages/FinancialHistory";
+import Settings from "./pages/Settings";
+import InvestorQuest from "./pages/InvestorQuest";
 import IntroVideo from "./components/IntroVideo";
 
 import "./App.css";
@@ -50,8 +53,9 @@ function App() {
   }
 
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
@@ -164,7 +168,7 @@ function App() {
             }
           />
 
-          {/* Discover & Schemes */}
+          {/* Discover & Schemes & Games */}
           <Route
             path="/schemes"
             element={
@@ -173,13 +177,29 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/investor-quest"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <InvestorQuest />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* History & Audit */}
+          {/* History & Settings */}
           <Route
             path="/history"
             element={
               <ProtectedRoute requireOnboarded={true}>
                 <FinancialHistory />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <Settings />
               </ProtectedRoute>
             }
           />
@@ -323,7 +343,8 @@ function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
-  );
+  </ThemeProvider>
+);
 }
 
 export default App;

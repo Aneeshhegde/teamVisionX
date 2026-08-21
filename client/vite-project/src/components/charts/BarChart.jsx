@@ -63,7 +63,7 @@ export const BarChart = ({
                   y1={y}
                   x2={width - padding.right}
                   y2={y}
-                  stroke="rgba(255, 255, 255, 0.05)"
+                  stroke="rgba(150, 150, 150, 0.18)"
                   strokeDasharray="4 4"
                 />
                 <text

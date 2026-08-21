@@ -16,7 +16,7 @@
 
 .app-header {
   height: var(--header-height);
-  background: rgba(12, 19, 34, 0.8);
+  background: var(--bg-secondary);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border-bottom: 1px solid var(--border-subtle);
@@ -79,6 +79,17 @@
   background: rgba(16, 185, 129, 0.1);
   border: 1px solid rgba(16, 185, 129, 0.25);
   border-radius: var(--radius-full);
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+}
+
+.market-ticker-pill:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px);
 }
 
 .ticker-pulse {
@@ -98,8 +109,34 @@
 
 .ticker-text {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   color: #34d399;
+}
+
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.25);
+  transform: translateY(-1px);
+}
+
+.theme-icon {
+  font-size: 14px;
 }
 
 .user-profile-menu {

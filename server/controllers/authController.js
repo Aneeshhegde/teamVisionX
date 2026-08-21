@@ -234,11 +234,35 @@ const forgotPassword = async (req, res) => {
 
     try {
       await transporter.sendMail({
-        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        from: process.env.SMTP_FROM || `"WealthX Security" <${process.env.SMTP_USER}>`,
         to: user.email,
-        subject: "Your password reset OTP",
-        text: `Your OTP for password reset is ${otp}. It expires in 5 minutes.`,
-        html: `<p>Your OTP for password reset is <strong>${otp}</strong>.</p><p>It expires in 5 minutes.</p>`,
+        subject: `🔒 ${otp} is your WealthX Password Reset Verification Code`,
+        text: `Your WealthX password reset verification code is: ${otp}. This OTP will expire in 5 minutes. If you did not request this, please ignore this email.`,
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 24px; background: #0c1322; color: #f8fafc; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <h2 style="color: #38bdf8; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">WealthX Security</h2>
+              <span style="font-size: 11px; font-weight: 700; color: #34d399; letter-spacing: 0.05em; text-transform: uppercase;">Password Reset Verification</span>
+            </div>
+            <p style="color: #cbd5e1; font-size: 14.5px; line-height: 1.5; margin: 0 0 16px 0;">
+              Hello <strong>${user.name || "WealthX User"}</strong>,
+            </p>
+            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.5; margin: 0 0 20px 0;">
+              We received a request to reset the password for your WealthX account. Use the 6-digit verification code below to set a new password:
+            </p>
+            <div style="margin: 24px 0; padding: 18px; background: rgba(37,99,235,0.15); border: 1px solid rgba(59,130,246,0.35); border-radius: 8px; text-align: center;">
+              <span style="font-family: 'Courier New', Courier, monospace; font-size: 36px; font-weight: 800; letter-spacing: 8px; color: #38bdf8; display: inline-block;">${otp}</span>
+            </div>
+            <p style="color: #94a3b8; font-size: 12.5px; line-height: 1.5; margin: 0 0 24px 0;">
+              ⏳ This verification code expires in <strong>5 minutes</strong>. If you did not request this password reset, your account is safe and you can safely ignore this email.
+            </p>
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;" />
+            <p style="color: #64748b; font-size: 11px; margin: 0; text-align: center;">
+              WealthX (VisionX) Platform • Advanced Financial Intelligence<br />
+              Never share your OTP with anyone.
+            </p>
+          </div>
+        `,
       });
     } catch (mailError) {
       return res.status(500).json({

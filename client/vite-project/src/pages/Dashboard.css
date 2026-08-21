@@ -233,7 +233,7 @@
   padding: 32px;
   border-radius: var(--radius-lg);
   border-left: 4px solid var(--accent-teal);
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(13, 20, 35, 0.9) 100%);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, var(--bg-card) 100%);
   display: flex;
   justify-content: space-between;
   align-items: center;

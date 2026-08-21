@@ -312,8 +312,8 @@ export const Dashboard = () => {
               <Link to="/my-next-money" className="btn btn-primary" style={{ padding: "12px 24px", fontSize: "14px" }}>
                 Optimize Next ₹10,000 ⚡
               </Link>
-              <Link to="/ai-decision-lab" className="btn btn-secondary" style={{ padding: "12px 24px", fontSize: "14px" }}>
-                AI Decision Lab 🤖
+              <Link to="/ai-decision-lab" className="btn btn-secondary" style={{ padding: "12px 24px", fontSize: "14px", fontWeight: 800 }}>
+                🤖 ASK AI &rarr;
               </Link>
             </div>
           </div>

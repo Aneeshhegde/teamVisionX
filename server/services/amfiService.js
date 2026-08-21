@@ -294,8 +294,28 @@ const getMutualFundByCode = async (schemeCode = "") => {
   }
 };
 
+/**
+ * Get top recommended mutual funds for a risk profile
+ */
+const getTopRecommendedFunds = async (riskCategory = "moderate_growth", limit = 4) => {
+  const funds = INITIAL_CURATED_FUNDS.map((f) => ({
+    schemeCode: f.schemeCode,
+    name: f.schemeName,
+    amc: f.amc,
+    category: f.subCategory,
+    latestNav: f.nav,
+    navDate: f.navDate || "21 Aug 2026",
+    riskLevel: f.riskLevel,
+    expenseRatio: f.expenseRatio,
+    cagr3Y: f.cagr3Y,
+    suitabilityScore: 92,
+  }));
+  return funds.slice(0, limit);
+};
+
 module.exports = {
   searchMutualFunds,
   getMutualFundByCode,
+  getTopRecommendedFunds,
   INITIAL_CURATED_FUNDS,
 };
