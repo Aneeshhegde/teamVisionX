@@ -1,0 +1,95 @@
+.signup-page {
+    min-height: 100vh;
+    padding: 110px 20px 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top left, rgba(88, 166, 255, 0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(88, 166, 255, 0.12), transparent 28%),
+        linear-gradient(180deg, #0b1220 0%, #101522 100%);
+}
+
+.signup-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0));
+    pointer-events: none;
+}
+
+.signup-page .card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 440px;
+    padding: 42px;
+    border-radius: 22px;
+    background: rgba(16, 21, 34, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(18px);
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    color: white;
+}
+
+.signup-page .card h2 {
+    font-size: 30px;
+    text-align: center;
+}
+
+.signup-page .card form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+}
+
+.signup-page .card input {
+    width: 100%;
+    height: 48px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 0 15px;
+    outline: none;
+    color: white;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.signup-page .card input::placeholder {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.signup-page .card input:focus {
+    border-color: rgba(88, 166, 255, 0.85);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.14);
+}
+
+.signup-page .card button {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #58a6ff, #3b82f6);
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.signup-page .card button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(88, 166, 255, 0.25);
+}
+
+.signup-page .card button:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
