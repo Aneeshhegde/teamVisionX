@@ -10,6 +10,16 @@ const goalRoutes = require("./routes/goalRoutes");
 const xrayRoutes = require("./routes/xrayRoutes");
 const actionPlanRoutes = require("./routes/actionPlanRoutes");
 const investmentRoutes = require("./routes/investmentRoutes");
+const calculatorRoutes = require("./routes/calculatorRoutes");
+const loanRoutes = require("./routes/loanRoutes");
+const riskRoutes = require("./routes/riskRoutes");
+const decisionRoutes = require("./routes/decisionRoutes");
+const nextMoneyRoutes = require("./routes/nextMoneyRoutes");
+const simulationRoutes = require("./routes/simulationRoutes");
+const hypeCheckRoutes = require("./routes/hypeCheckRoutes");
+const schemesRoutes = require("./routes/schemesRoutes");
+const historyRoutes = require("./routes/historyRoutes");
+const mutualFundRoutes = require("./routes/mutualFundRoutes");
 
 dotenv.config();
 
@@ -30,6 +40,16 @@ app.use("/api/goals", goalRoutes);
 app.use("/api/financial-xray", xrayRoutes);
 app.use("/api/action-plan", actionPlanRoutes);
 app.use("/api/investments", investmentRoutes);
+app.use("/api/calculators", calculatorRoutes);
+app.use("/api/loans", loanRoutes);
+app.use("/api/risk-dna", riskRoutes);
+app.use("/api/decision-lab", decisionRoutes);
+app.use("/api/next-money", nextMoneyRoutes);
+app.use("/api/simulations", simulationRoutes);
+app.use("/api/hype-check", hypeCheckRoutes);
+app.use("/api/schemes", schemesRoutes);
+app.use("/api/history", historyRoutes);
+app.use("/api/mutual-funds", mutualFundRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend is Running 🚀");

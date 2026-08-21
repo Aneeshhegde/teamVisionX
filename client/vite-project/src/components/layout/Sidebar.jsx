@@ -30,6 +30,17 @@ export const Sidebar = ({ isMobileOpen, onCloseMobile }) => {
         { label: "Wealth Vault", path: "/wealth-vault", icon: "🏦" },
         { label: "Goals", path: "/goals", icon: "🎯" },
         { label: "Action Plan", path: "/action-plan", icon: "📋" },
+        { label: "Your Risk DNA", path: "/risk-dna", icon: "🧬" },
+      ],
+    },
+    {
+      key: "decide",
+      title: "Decide Smarter",
+      items: [
+        { label: "AI Decision Lab", path: "/ai-decision-lab", icon: "🤖" },
+        { label: "My Next ₹10,000", path: "/my-next-money", icon: "💡" },
+        { label: "Future You Simulator", path: "/future-you", icon: "⏳" },
+        { label: "Hype Check", path: "/hype-check", icon: "🛡️" },
       ],
     },
     {
@@ -49,41 +60,35 @@ export const Sidebar = ({ isMobileOpen, onCloseMobile }) => {
       key: "calculators",
       title: "Plan & Calculate",
       items: [
-        { label: "Calculators Suite", path: "/calculators", icon: "🧮", disabled: true, badge: "Soon" },
-        { label: "SIP Calculator", path: "/calculators/sip", icon: "📈", disabled: true, badge: "Soon" },
-        { label: "Step-Up SIP", path: "/calculators/step-up-sip", icon: "🚀", disabled: true, badge: "Soon" },
-        { label: "Loan EMI", path: "/calculators/emi", icon: "💳", disabled: true, badge: "Soon" },
-        { label: "FD Growth", path: "/calculators/fd", icon: "🔒", disabled: true, badge: "Soon" },
-        { label: "Goal Target", path: "/calculators/goal", icon: "🎯", disabled: true, badge: "Soon" },
+        { label: "Calculators Suite", path: "/calculators", icon: "🧮" },
+        { label: "SIP Calculator", path: "/calculators/sip", icon: "📈" },
+        { label: "Step-Up SIP", path: "/calculators/step-up-sip", icon: "🚀" },
+        { label: "Loan EMI", path: "/calculators/emi", icon: "💳" },
+        { label: "FD Growth", path: "/calculators/fd", icon: "🔒" },
+        { label: "Goal Target", path: "/calculators/goal", icon: "🎯" },
       ],
     },
     {
       key: "loans",
       title: "Loans & Debt",
       items: [
-        { label: "Loans Overview", path: "/loans", icon: "📑", disabled: true, badge: "Phase 2" },
-        { label: "Loan Finder", path: "/loans/finder", icon: "🔍", disabled: true, badge: "Phase 2" },
-        { label: "Compare Loans", path: "/loans/compare", icon: "⚖️", disabled: true, badge: "Phase 2" },
-        { label: "Debt Health (DTI)", path: "/loans/debt-health", icon: "🩺", disabled: true, badge: "Phase 2" },
-        { label: "Repayment Planner", path: "/loans/repayment", icon: "⚡", disabled: true, badge: "Phase 2" },
+        { label: "Loans Overview", path: "/loans", icon: "📑" },
+        { label: "Loan Finder", path: "/loans/finder", icon: "🔍" },
+        { label: "Compare Loans", path: "/loans/compare", icon: "⚖️" },
       ],
     },
     {
-      key: "decide",
-      title: "Decide Smarter",
+      key: "discover",
+      title: "Discover",
       items: [
-        { label: "AI Decision Lab", path: "/ai-decision-lab", icon: "🤖", disabled: true, badge: "Soon" },
-        { label: "My Next ₹10,000", path: "/my-next-money", icon: "💡", disabled: true, badge: "Soon" },
-        { label: "Future You Simulator", path: "/future-you", icon: "⏳", disabled: true, badge: "Soon" },
-        { label: "Hype Check", path: "/hype-check", icon: "🛡️", disabled: true, badge: "Soon" },
-        { label: "Government Schemes", path: "/schemes", icon: "🇮🇳", disabled: true, badge: "Soon" },
+        { label: "Government Schemes", path: "/schemes", icon: "🇮🇳" },
       ],
     },
     {
       key: "system",
       title: "System",
       items: [
-        { label: "Audit & History", path: "/history", icon: "🕰️", disabled: true, badge: "Soon" },
+        { label: "Audit & History", path: "/history", icon: "🕰️" },
         { label: "Settings & Profile", path: "/onboarding", icon: "⚙️" },
         ...(isAdmin
           ? [{ label: "Admin Portal", path: "/admin", icon: "👑", badge: "Admin" }]

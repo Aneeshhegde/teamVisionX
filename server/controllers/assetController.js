@@ -1,5 +1,6 @@
 const Asset = require("../models/Asset");
 const FinancialProfile = require("../models/FinancialProfile");
+const { logFinancialEvent } = require("../services/historyService");
 const { sendSuccess, sendError } = require("../utils/apiResponse");
 
 /**
@@ -112,6 +113,16 @@ const createAsset = async (req, res) => {
       investedAmount: numInvested,
       currentValue: numCurrent,
       notes: notes ? notes.trim() : "",
+    });
+
+    await logFinancialEvent({
+      userId,
+      eventType: "asset_added",
+      title: `Added Asset: ${newAsset.name}`,
+      description: `Recorded ${category.replace("_", " ")} holding with current valuation of ₹${numCurrent.toLocaleString("en-IN")}.`,
+      amount: numCurrent,
+      category,
+      metadata: { assetId: newAsset._id, category },
     });
 
     return sendSuccess(res, newAsset, "Asset added to Wealth Vault successfully", 201);

@@ -15,6 +15,22 @@ import ActionPlan from "./pages/ActionPlan";
 import InvestmentHub from "./pages/InvestmentHub";
 import StocksExplorer from "./pages/StocksExplorer";
 import InvestmentEduPage from "./pages/InvestmentEduPage";
+import CalculatorsHub from "./pages/calculators/CalculatorsHub";
+import SIPCalculator from "./pages/calculators/SIPCalculator";
+import StepUpSIPCalculator from "./pages/calculators/StepUpSIPCalculator";
+import EMICalculator from "./pages/calculators/EMICalculator";
+import FDCalculator from "./pages/calculators/FDCalculator";
+import GoalTargetCalculator from "./pages/calculators/GoalTargetCalculator";
+import LoansOverview from "./pages/loans/LoansOverview";
+import LoanFinder from "./pages/loans/LoanFinder";
+import CompareLoans from "./pages/loans/CompareLoans";
+import RiskDNA from "./pages/RiskDNA";
+import AIDecisionLab from "./pages/AIDecisionLab";
+import MyNextMoney from "./pages/MyNextMoney";
+import FutureYou from "./pages/FutureYou";
+import HypeCheck from "./pages/HypeCheck";
+import GovernmentSchemes from "./pages/GovernmentSchemes";
+import FinancialHistory from "./pages/FinancialHistory";
 import IntroVideo from "./components/IntroVideo";
 
 import "./App.css";
@@ -106,6 +122,70 @@ function App() {
             }
           />
           <Route
+            path="/risk-dna"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <RiskDNA />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Decide Smarter Suite */}
+          <Route
+            path="/ai-decision-lab"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <AIDecisionLab />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-next-money"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <MyNextMoney />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/future-you"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <FutureYou />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/hype-check"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <HypeCheck />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Discover & Schemes */}
+          <Route
+            path="/schemes"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <GovernmentSchemes />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* History & Audit */}
+          <Route
+            path="/history"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <FinancialHistory />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Invest & Save Routes */}
+          <Route
             path="/investments"
             element={
               <ProtectedRoute requireOnboarded={true}>
@@ -158,6 +238,82 @@ function App() {
             element={
               <ProtectedRoute requireOnboarded={true}>
                 <InvestmentEduPage defaultCategory="etfs" />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Calculators Suite Routes */}
+          <Route
+            path="/calculators"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <CalculatorsHub />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calculators/sip"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <SIPCalculator />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calculators/step-up-sip"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <StepUpSIPCalculator />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calculators/emi"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <EMICalculator />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calculators/fd"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <FDCalculator />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/calculators/goal"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <GoalTargetCalculator />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Loans & Debt Routes */}
+          <Route
+            path="/loans"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <LoansOverview />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/loans/finder"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <LoanFinder />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/loans/compare"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <CompareLoans />
               </ProtectedRoute>
             }
           />

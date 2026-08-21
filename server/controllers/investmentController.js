@@ -161,10 +161,12 @@ const getStocksSearch = async (req, res) => {
   try {
     const { q } = req.query;
     const result = await searchStocks(q || "");
-    return sendSuccess(res, result.data, "Stocks retrieved", 200, {
+    return sendSuccess(res, {
+      stocks: result.data,
+      source: result.source,
+      dataFreshness: result.dataFreshness,
       isSimulated: result.isSimulated,
-      provider: result.provider,
-    });
+    }, "Stocks retrieved");
   } catch (error) {
     return sendError(res, error.message, 500);
   }
@@ -177,10 +179,12 @@ const getStockDetails = async (req, res) => {
   try {
     const { symbol } = req.params;
     const result = await getStockBySymbol(symbol);
-    return sendSuccess(res, result.data, `Stock details for ${symbol}`, 200, {
+    return sendSuccess(res, {
+      ...result.data,
+      source: result.source,
+      dataFreshness: result.dataFreshness,
       isSimulated: result.isSimulated,
-      provider: result.provider,
-    });
+    }, `Stock details for ${symbol}`);
   } catch (error) {
     return sendError(res, error.message, 500);
   }

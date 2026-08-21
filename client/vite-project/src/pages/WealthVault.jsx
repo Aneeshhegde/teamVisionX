@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
+import DonutChart from "../components/charts/DonutChart";
 import { LoadingState, ErrorState, EmptyState } from "../components/common/StateViews";
 import api from "../utils/apiClient";
 import "./WealthVault.css";
@@ -269,36 +270,27 @@ export const WealthVault = () => {
               </div>
             </div>
 
-            {/* Asset Allocation Breakdown Bar */}
+            {/* Asset Allocation Breakdown & Donut */}
             {summary.categoryBreakdown && summary.categoryBreakdown.length > 0 && (
               <div className="section-card glass-panel allocation-card">
                 <div className="section-card-header">
-                  <h3>📊 Portfolio Asset Allocation</h3>
-                  <span className="badge badge-blue">Real-time breakdown</span>
+                  <h3>📊 Portfolio Asset Allocation & Composition</h3>
+                  <Link to="/risk-dna" className="btn btn-secondary" style={{ padding: "6px 14px", fontSize: "12px" }}>
+                    Compare with Risk DNA Target &rarr;
+                  </Link>
                 </div>
-                <div className="allocation-bar-track">
-                  {summary.categoryBreakdown.map((cat) => (
-                    <div
-                      key={cat.category}
-                      className={`allocation-segment fill-${cat.category}`}
-                      style={{ width: `${Math.max(cat.percentage, 2)}%` }}
-                      title={`${CATEGORY_META[cat.category]?.label || cat.category}: ${cat.percentage}%`}
-                    />
-                  ))}
-                </div>
-                <div className="allocation-legend-grid">
-                  {summary.categoryBreakdown.map((cat) => (
-                    <div key={cat.category} className="legend-item">
-                      <span className={`legend-dot dot-${cat.category}`}></span>
-                      <span className="legend-name">
-                        {CATEGORY_META[cat.category]?.label || cat.category}
-                      </span>
-                      <span className="legend-pct">{cat.percentage}%</span>
-                      <span className="legend-val">
-                        (₹{Number(cat.currentValue).toLocaleString("en-IN")})
-                      </span>
-                    </div>
-                  ))}
+
+                <div style={{ margin: "16px 0" }}>
+                  <DonutChart
+                    data={summary.categoryBreakdown.map((c) => ({
+                      label: CATEGORY_META[c.category]?.label || c.category,
+                      value: c.currentValue,
+                      color: c.category === "stock" ? "#3b82f6" : c.category === "mutual_fund" ? "#06b6d4" : c.category === "gold" ? "#f59e0b" : c.category === "fd" ? "#8b5cf6" : "#10b981",
+                    }))}
+                    centerLabel="Vault Total"
+                    centerValue={`₹${Number(summary.totalCurrentValue || 0).toLocaleString("en-IN")}`}
+                    size={170}
+                  />
                 </div>
               </div>
             )}

@@ -1,4 +1,5 @@
 const Goal = require("../models/Goal");
+const { logFinancialEvent } = require("../services/historyService");
 const { sendSuccess, sendError } = require("../utils/apiResponse");
 
 /**
@@ -147,6 +148,16 @@ const createGoal = async (req, res) => {
       currentAmount: numCurrent,
       targetDate: parsedDate,
       priority: chosenPriority,
+    });
+
+    await logFinancialEvent({
+      userId,
+      eventType: "goal_created",
+      title: `Created Goal: ${newGoal.title}`,
+      description: `Targeting ₹${numTarget.toLocaleString("en-IN")} by ${parsedDate.toLocaleDateString("en-IN")}.`,
+      amount: numTarget,
+      category: chosenCategory,
+      metadata: { goalId: newGoal._id },
     });
 
     return sendSuccess(res, enrichGoal(newGoal), "Financial goal created successfully", 201);

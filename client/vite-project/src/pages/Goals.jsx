@@ -274,6 +274,42 @@ export const Goals = () => {
               </div>
             </div>
 
+            {/* Multi-Goal Progress Overview Card */}
+            {data.goals && data.goals.length > 0 && (
+              <div className="section-card glass-panel" style={{ padding: "24px", borderRadius: "var(--radius-lg)", marginBottom: "20px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                  <h3 style={{ fontSize: "16px", fontWeight: 700 }}>🎯 Milestone Progress & Target Pacing</h3>
+                  <span className="badge badge-blue">{data.goals.length} Goals Active</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                  {data.goals.map((g) => {
+                    const pct = Math.min(100, Math.round(((g.currentAmount || 0) / (g.targetAmount || 1)) * 100));
+                    return (
+                      <div key={g._id} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13.5px" }}>
+                          <span className="font-bold">{g.title}</span>
+                          <span className="font-mono text-teal">
+                            ₹{Number(g.currentAmount || 0).toLocaleString("en-IN")} / ₹{Number(g.targetAmount || 0).toLocaleString("en-IN")} ({pct}%)
+                          </span>
+                        </div>
+                        <div style={{ width: "100%", height: "8px", background: "var(--bg-surface)", borderRadius: "999px", overflow: "hidden" }}>
+                          <div
+                            style={{
+                              height: "100%",
+                              width: `${pct}%`,
+                              background: pct >= 100 ? "var(--accent-teal)" : pct >= 50 ? "var(--accent-cyan)" : "var(--accent-primary)",
+                              borderRadius: "999px",
+                              transition: "width 0.5s ease",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Filter Tabs */}
             <div className="goals-controls-bar">
               <div className="filter-tabs">
