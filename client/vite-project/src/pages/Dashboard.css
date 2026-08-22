@@ -320,3 +320,61 @@
   font-size: 12px;
   color: var(--text-muted);
 }
+
+/* Android & Mobile Responsive Breakpoints */
+@media (max-width: 768px) {
+  .dashboard-view {
+    gap: 20px;
+    padding-bottom: 32px;
+  }
+  .dashboard-banner {
+    padding: 20px 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .banner-left {
+    min-width: 0;
+    width: 100%;
+  }
+  .welcome-name {
+    font-size: 22px;
+  }
+  .welcome-sub {
+    font-size: 13px;
+  }
+  .banner-right {
+    width: 100%;
+    justify-content: space-between;
+    padding: 12px 16px;
+  }
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .metric-card {
+    padding: 18px 16px;
+  }
+  .decision-teaser-card {
+    padding: 20px 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .decision-teaser-right {
+    width: 100%;
+    flex-direction: column;
+  }
+  .decision-teaser-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+  .risk-dna-widget {
+    padding: 18px 16px;
+  }
+  .quick-actions-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}

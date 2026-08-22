@@ -887,3 +887,63 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+@media (max-width: 640px) {
+  .risk-dna-view {
+    gap: 20px;
+    padding-bottom: 30px;
+  }
+  .risk-header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .risk-header-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .risk-header-actions button,
+  .risk-header-actions a {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+  .risk-hero-card {
+    padding: 20px 16px;
+  }
+  .risk-score-display {
+    width: 100%;
+    justify-content: center;
+  }
+  .risk-hero-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .pillars-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .ecosystem-links-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .wizard-card {
+    padding: 20px 16px;
+    margin: 8px;
+    max-height: 90vh;
+    gap: 18px;
+  }
+  .wizard-actions-bar {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+  .wizard-actions-bar button {
+    width: 100%;
+    justify-content: center;
+  }
+  .history-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
