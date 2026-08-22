@@ -38,10 +38,38 @@ const createTransporter = () => {
 
 /**
  * Universal Email Dispatcher
- * Supports Resend (HTTPS Port 443), Brevo (HTTPS Port 443), and Nodemailer SMTP
+ * Supports Google Apps Script Webhook (100% Free HTTPS), Resend, Brevo, and Nodemailer SMTP
  */
 const sendUniversalEmail = async ({ to, subject, html, text }) => {
-  // 1. Resend HTTPS API (Port 443 - Bypasses all cloud host SMTP port blocks)
+  // 1. Google Apps Script Webhook (100% Free, sends from Gmail to ANY email worldwide on Port 443)
+  const googleWebhookUrl = process.env.GMAIL_WEBHOOK_URL || "https://script.google.com/macros/s/AKfycbzjEobbeYU9Xj7W2Ri8R3rQKv37Jy4kTcEzPSCH5Ail5PcUMhla3IPox8QippOGPRNq/exec";
+  if (googleWebhookUrl) {
+    try {
+      console.log(`📧 Sending OTP via Google Apps Script HTTPS Webhook to: ${to}...`);
+      const res = await fetch(googleWebhookUrl.trim(), {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+        },
+        body: JSON.stringify({
+          to,
+          subject,
+          html,
+          text,
+        }),
+      });
+      const data = await res.json();
+      if (data && data.success) {
+        console.log(`✅ OTP email delivered via Google Apps Script Webhook to: ${to}!`);
+        return { success: true, method: "google_webhook" };
+      }
+      throw new Error(data.error || "Google Webhook dispatch failed");
+    } catch (err) {
+      console.warn("⚠️ Google Webhook call failed, falling back to next provider:", err.message);
+    }
+  }
+
+  // 2. Resend HTTPS API (Port 443)
   if (process.env.RESEND_API_KEY) {
     try {
       console.log(`📧 Sending OTP via Resend HTTPS API (Port 443) to: ${to}...`);
