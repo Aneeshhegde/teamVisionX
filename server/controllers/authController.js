@@ -147,6 +147,25 @@ const sendUniversalEmail = async ({ to, subject, html, text }) => {
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
 
+const validatePassword = (password) => {
+  if (!password || password.length < 8) {
+    return "Password must be at least 8 characters long";
+  }
+  if (!/[A-Z]/.test(password)) {
+    return "Password must contain at least 1 uppercase letter (A-Z)";
+  }
+  if (!/[a-z]/.test(password)) {
+    return "Password must contain at least 1 lowercase letter (a-z)";
+  }
+  if (!/[0-9]/.test(password)) {
+    return "Password must contain at least 1 number (0-9)";
+  }
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password)) {
+    return "Password must contain at least 1 special character (!@#$%^&*)";
+  }
+  return null;
+};
+
 const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -154,6 +173,13 @@ const signup = async (req, res) => {
     if (!name || !email || !password) {
       return res.status(400).json({
         message: "Name, email, and password are required",
+      });
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      return res.status(400).json({
+        message: passwordError,
       });
     }
 
@@ -417,6 +443,13 @@ const resetPassword = async (req, res) => {
     if (!email || !otp || !password) {
       return res.status(400).json({
         message: "Email, OTP, and password are required",
+      });
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      return res.status(400).json({
+        message: passwordError,
       });
     }
 
