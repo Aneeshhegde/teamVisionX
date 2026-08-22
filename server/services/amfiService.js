@@ -185,8 +185,14 @@ const ensureFundsSeeded = async () => {
   }
 };
 
-// Seed on startup
-ensureFundsSeeded();
+// Seed when database connection is open
+if (mongoose.connection.readyState === 1) {
+  ensureFundsSeeded();
+} else {
+  mongoose.connection.once("open", () => {
+    ensureFundsSeeded();
+  });
+}
 
 /**
  * Search mutual funds by keyword, category, or risk level
