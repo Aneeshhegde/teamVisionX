@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
@@ -17,6 +17,14 @@ function Login() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [otpVerified, setOtpVerified] = useState(false);
+
+  useEffect(() => {
+    const sessionTimeoutMsg = sessionStorage.getItem("session_timeout_msg");
+    if (sessionTimeoutMsg) {
+      setError(sessionTimeoutMsg);
+      sessionStorage.removeItem("session_timeout_msg");
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

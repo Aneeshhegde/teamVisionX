@@ -62,6 +62,15 @@ export const AppLayout = ({ children, disclaimerVariant = "general" }) => {
               <span className="ticker-text">NSE Live Market ↗</span>
             </a>
 
+            <Link
+              to="/ai-decision-lab"
+              className="ask-ai-header-btn"
+              title="Ask AI in WealthX Decision Lab"
+            >
+              <span className="ask-ai-icon">🤖</span>
+              <span className="ask-ai-text">Ask AI</span>
+            </Link>
+
             <button
               type="button"
               className="theme-toggle-btn"
