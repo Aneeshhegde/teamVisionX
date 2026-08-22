@@ -112,8 +112,9 @@ export const AIDecisionLab = () => {
   // On page load: Fetch presets. Only auto-send if explicitly navigated with initialQuery state from another page
   useEffect(() => {
     fetchPresets();
-    if (location.state?.initialQuery) {
-      sendQuery(location.state.initialQuery);
+    const queryToRun = location.state?.initialQuery || location.state?.presetQuery;
+    if (queryToRun) {
+      sendQuery(queryToRun);
     }
     // Clean initial state on fresh visit - NO auto-sending of presets
   }, []);

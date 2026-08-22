@@ -144,6 +144,14 @@ function App() {
             }
           />
           <Route
+            path="/decision-lab"
+            element={
+              <ProtectedRoute requireOnboarded={true}>
+                <AIDecisionLab />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/my-next-money"
             element={
               <ProtectedRoute requireOnboarded={true}>

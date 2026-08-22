@@ -277,7 +277,78 @@ const InvestorQuest = () => {
     }
   };
 
-  // 6. Reset simulation
+  // 6. Ask AI Decision Lab about score & simulation decisions
+  const handleAskAIAboutScore = () => {
+    if (!gameState) return;
+    const overallScore = gameState.strategyScores?.overall || 80;
+    const epScore = gameState.strategyScores?.emergencyPreparedness || 0;
+    const divScore = gameState.strategyScores?.diversification || 0;
+    const rmScore = gameState.strategyScores?.riskManagement || 0;
+    const gdScore = gameState.strategyScores?.goalDiscipline || 0;
+    const finWealth = currentNetWorth || 0;
+    const startWealth = gameState.startingNetWorth || 0;
+    const totContrib = gameState.totalContributions || 0;
+
+    const analysisPrompt = `I just completed an Investor Quest simulation session in ${gameState.mode === "career" ? "Career Mode (10-Year)" : "Quick Play (5-Year)"} with an overall Wealth Strategy Score of ${overallScore}/100.
+Pillar Breakdown:
+- Emergency Preparedness: ${epScore}%
+- Asset Diversification: ${divScore}%
+- Risk Management: ${rmScore}%
+- Goal Discipline: ${gdScore}%
+
+Financial Outcome:
+- Starting Net Worth: ₹${startWealth.toLocaleString("en-IN")}
+- Total Surplus Contributed: ₹${totContrib.toLocaleString("en-IN")}
+- Final Virtual Wealth: ₹${finWealth.toLocaleString("en-IN")}
+- Goal Target: ₹${gameState.goal?.targetAmount?.toLocaleString("en-IN")} (${goalProgressPct}% achieved)
+
+Please evaluate my simulation decisions, explain where I demonstrated financial discipline, analyze where my allocations exposed me to drawdown or distress risks, and suggest 3 concrete steps to optimize my real-world portfolio.`;
+
+    navigate("/ai-decision-lab", {
+      state: {
+        initialQuery: analysisPrompt,
+        presetQuery: analysisPrompt,
+      },
+    });
+  };
+
+  const handleAskMentorDirectly = async (queryText) => {
+    if (!queryText?.trim() || mentorAsking) return;
+    const userQ = queryText.trim();
+    setMentorAsking(true);
+    const tempHistory = [...mentorChatHistory, { sender: "user", text: userQ }];
+    setMentorChatHistory(tempHistory);
+
+    try {
+      const res = await api.post("/api/investor-quest/ask-mentor", {
+        question: userQ,
+        gameState,
+      });
+      const respData = res.data?.data || res.data;
+      if (respData) {
+        setMentorChatHistory([
+          ...tempHistory,
+          {
+            sender: "mentor",
+            text: respData.answer,
+            conceptTip: respData.conceptTip,
+          },
+        ]);
+      }
+    } catch (err) {
+      setMentorChatHistory([
+        ...tempHistory,
+        {
+          sender: "mentor",
+          text: "Your strategy balanced liquidity with capital growth. Maintaining 6 months of emergency reserves and consistent asset allocation will protect your long-term compounding.",
+        },
+      ]);
+    } finally {
+      setMentorAsking(false);
+    }
+  };
+
+  // 7. Reset simulation
   const handleRestartGame = () => {
     setShowRestartConfirm(false);
     setGameState(null);
@@ -285,7 +356,7 @@ const InvestorQuest = () => {
     setStage("landing");
   };
 
-  // 7. Computed Metrics & Visual Chart Data
+  // 8. Computed Metrics & Visual Chart Data
   const currentNetWorth = useMemo(() => {
     if (!gameState) return 0;
     const p = gameState.portfolio || {};
@@ -1049,14 +1120,95 @@ const InvestorQuest = () => {
                 </div>
               </div>
 
+              {/* Interactive AI Mentor Consultation on Results */}
+              <div className="results-ai-mentor-card glass-panel">
+                <div className="mentor-header-row">
+                  <div className="mentor-badge-row">
+                    <span className="mentor-avatar">🤖</span>
+                    <div>
+                      <h4>Ask AI Mentor About Your Strategy Score & Decisions</h4>
+                      <span className="mentor-status-text">Instant Decision Feedback • Personalized Financial Review</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Consultation Chips */}
+                <div className="results-prompt-chips-row">
+                  <button
+                    type="button"
+                    className="results-prompt-chip"
+                    onClick={() =>
+                      handleAskMentorDirectly(
+                        `Why did I receive an overall Strategy Score of ${gameState.strategyScores?.overall || 80}/100? What were my best and weakest decisions?`
+                      )
+                    }
+                  >
+                    💬 Why did I get this Strategy Score?
+                  </button>
+                  <button
+                    type="button"
+                    className="results-prompt-chip"
+                    onClick={() =>
+                      handleAskMentorDirectly(
+                        `How did my Emergency Fund allocation (${gameState.strategyScores?.emergencyPreparedness}%) protect me during emergency shocks?`
+                      )
+                    }
+                  >
+                    🛡️ How did my Emergency Buffer perform?
+                  </button>
+                  <button
+                    type="button"
+                    className="results-prompt-chip"
+                    onClick={() =>
+                      handleAskMentorDirectly(
+                        `Analyze my Diversification score (${gameState.strategyScores?.diversification}%). How can I better balance Equities vs Gold vs Debt?`
+                      )
+                    }
+                  >
+                    📊 How to improve my Diversification?
+                  </button>
+                </div>
+
+                {/* Chat History */}
+                {mentorChatHistory.length > 0 && (
+                  <div className="results-mentor-chat-stream">
+                    {mentorChatHistory.map((msg, i) => (
+                      <div key={i} className={`mentor-chat-bubble ${msg.sender}`}>
+                        <span className="bubble-sender">{msg.sender === "user" ? "You" : "🤖 WealthX Mentor"}</span>
+                        <p>{msg.text}</p>
+                        {msg.conceptTip && (
+                          <div className="concept-tip-box">
+                            <strong>💡 Key Lesson:</strong> {msg.conceptTip}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Input Bar */}
+                <form onSubmit={handleAskMentor} className="mentor-input-form" style={{ marginTop: "12px" }}>
+                  <input
+                    type="text"
+                    placeholder="Ask anything about your score, drawdown, or simulated investments..."
+                    value={mentorQuery}
+                    onChange={(e) => setMentorQuery(e.target.value)}
+                    disabled={mentorAsking}
+                  />
+                  <button type="submit" className="btn btn-primary" disabled={mentorAsking || !mentorQuery.trim()}>
+                    {mentorAsking ? "Analyzing..." : "Ask Mentor →"}
+                  </button>
+                </form>
+              </div>
+
               {/* Next Steps: AI Decision Lab & Action Plan */}
               <div className="results-next-steps-row">
                 <button
                   type="button"
                   className="btn btn-primary"
-                  onClick={() => navigate("/decision-lab")}
+                  onClick={handleAskAIAboutScore}
                 >
-                  🤖 Ask WealthX AI About My Results →
+                  🤖 Deep-Dive in AI Decision Lab →
                 </button>
                 <button
                   type="button"
