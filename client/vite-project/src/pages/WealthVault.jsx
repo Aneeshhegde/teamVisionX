@@ -265,7 +265,13 @@ export const WealthVault = () => {
                   ₹{Number(summary.netWorth || 0).toLocaleString("en-IN")}
                 </div>
                 <div className="metric-footer">
-                  <span className="text-muted">Total Liabilities: ₹0 (No active loans)</span>
+                  {(summary.totalLiabilities || 0) > 0 ? (
+                    <Link to="/loans" className="text-rose font-bold" style={{ fontSize: "11.5px" }}>
+                      Liabilities: -₹{Number(summary.totalLiabilities || 0).toLocaleString("en-IN")} ({summary.activeLoansCount || 1} {summary.activeLoansCount === 1 ? "Loan" : "Loans"}) &rarr;
+                    </Link>
+                  ) : (
+                    <span className="text-muted">Total Liabilities: ₹0 (Debt-Free)</span>
+                  )}
                 </div>
               </div>
             </div>

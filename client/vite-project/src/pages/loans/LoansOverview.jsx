@@ -47,6 +47,17 @@ export const LoansOverview = () => {
     monthlyEMI: "",
   });
 
+  // Calculate live mathematically exact standard EMI
+  const computedLiveEMI = useMemo(() => {
+    const P = Number(formData.principal);
+    const r = Number(formData.interestRate) / 12 / 100;
+    const n = Number(formData.tenureMonths);
+    if (P > 0 && r > 0 && n > 0) {
+      return Math.round((P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1));
+    }
+    return null;
+  }, [formData.principal, formData.interestRate, formData.tenureMonths]);
+
   const fetchLoans = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -124,12 +135,18 @@ export const LoansOverview = () => {
       return;
     }
 
+    // Ensure monthlyEMI is mathematically synced
+    const finalPayload = {
+      ...formData,
+      monthlyEMI: formData.monthlyEMI ? Number(formData.monthlyEMI) : computedLiveEMI || undefined,
+    };
+
     setSubmitting(true);
     try {
       if (editingLoan) {
-        await api.put(`/api/loans/${editingLoan._id}`, formData);
+        await api.put(`/api/loans/${editingLoan._id}`, finalPayload);
       } else {
-        await api.post("/api/loans", formData);
+        await api.post("/api/loans", finalPayload);
       }
       setIsModalOpen(false);
       fetchLoans();
@@ -246,7 +263,9 @@ export const LoansOverview = () => {
                     Total Borrowed: ₹{Number(summary.totalPrincipal || 0).toLocaleString("en-IN")}
                   </span>
                   <span className="footer-sep">•</span>
-                  <span className="text-cyan">{summary.totalLoans || 0} Loans</span>
+                  <span className="text-cyan">
+                    {summary.totalLoans || 0} {summary.totalLoans === 1 ? "Loan" : "Loans"}
+                  </span>
                 </div>
               </div>
 
@@ -580,11 +599,23 @@ export const LoansOverview = () => {
                 </div>
 
                 <div className="form-group">
-                  <label>Monthly EMI (₹) (Leave blank to auto-compute)</label>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <label>Monthly EMI (₹)</label>
+                    {computedLiveEMI && (
+                      <span
+                        className="text-teal font-mono font-bold"
+                        style={{ fontSize: "11.5px", cursor: "pointer" }}
+                        onClick={() => setFormData({ ...formData, monthlyEMI: computedLiveEMI })}
+                        title="Click to set exact standard amortization EMI"
+                      >
+                        ⚡ Standard: ₹{computedLiveEMI.toLocaleString("en-IN")}/mo
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="number"
                     min="0"
-                    placeholder="Auto-computed if omitted"
+                    placeholder={computedLiveEMI ? `Standard: ₹${computedLiveEMI}` : "Auto-computed if omitted"}
                     value={formData.monthlyEMI}
                     onChange={(e) => setFormData({ ...formData, monthlyEMI: e.target.value })}
                   />

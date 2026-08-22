@@ -203,11 +203,11 @@ const updateLoan = async (req, res) => {
       shouldRecalculateEMI = true;
     }
 
-    if (monthlyEMI !== undefined && Number(monthlyEMI) >= 0) {
-      loan.monthlyEMI = Number(monthlyEMI);
-    } else if (shouldRecalculateEMI) {
+    if (shouldRecalculateEMI) {
       const emiCalc = calculateEMI(loan.principal, loan.interestRate, loan.tenureMonths);
       loan.monthlyEMI = emiCalc.monthlyEMI;
+    } else if (monthlyEMI !== undefined && Number(monthlyEMI) >= 0) {
+      loan.monthlyEMI = Number(monthlyEMI);
     }
 
     await loan.save();

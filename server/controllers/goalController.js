@@ -21,6 +21,7 @@ const enrichGoal = (goal) => {
 
   const remainingAmount = Math.max(0, target - current);
   const requiredMonthlyContribution = Math.round(remainingAmount / remainingMonths);
+  const monthlyContribution = Number(goal.monthlyContribution || 0);
 
   const timeElapsedRatio = Math.min(1, elapsedDays / totalDurationDays);
   const progressRatio = Math.min(1, current / target);
@@ -31,7 +32,16 @@ const enrichGoal = (goal) => {
   if (progressPct >= 100) {
     status = "completed";
     statusLabel = "Achieved";
-  } else if (remainingDays === 0 || timeElapsedRatio - progressRatio > 0.2) {
+  } else if (remainingDays <= 0) {
+    status = "behind_schedule";
+    statusLabel = "Deadline Reached";
+  } else if (requiredMonthlyContribution > 0 && monthlyContribution < requiredMonthlyContribution * 0.5) {
+    status = "behind_schedule";
+    statusLabel = "Behind Schedule";
+  } else if (requiredMonthlyContribution > 0 && monthlyContribution < requiredMonthlyContribution * 0.85) {
+    status = "needs_attention";
+    statusLabel = "Needs Attention";
+  } else if (timeElapsedRatio - progressRatio > 0.2) {
     status = "behind_schedule";
     statusLabel = "Behind Schedule";
   } else if (timeElapsedRatio - progressRatio > 0.08) {
@@ -46,6 +56,7 @@ const enrichGoal = (goal) => {
     remainingDays: Math.round(remainingDays),
     remainingMonths,
     requiredMonthlyContribution,
+    monthlyContribution,
     status,
     statusLabel,
   };

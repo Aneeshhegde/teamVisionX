@@ -511,7 +511,9 @@ export const FinancialXRay = () => {
             <div className="diagnostic-metrics-list">
               <div className="diag-metric-row">
                 <span>Active Loan Facilities</span>
-                <span className="font-bold">{debtHealth.loansCount || 0} Loans</span>
+                <span className="font-bold">
+                  {debtHealth.loansCount || 0} {debtHealth.loansCount === 1 ? "Loan" : "Loans"}
+                </span>
               </div>
               <div className="diag-metric-row">
                 <span>Total Outstanding</span>
