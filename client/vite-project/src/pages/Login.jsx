@@ -83,7 +83,11 @@ function Login() {
       }
 
       setMessage(data.message || "OTP sent to your email. Please check your inbox.");
-      setResetData((prev) => ({ ...prev, otp: "" }));
+      if (data.sandboxOtp) {
+        setResetData((prev) => ({ ...prev, otp: data.sandboxOtp }));
+      } else {
+        setResetData((prev) => ({ ...prev, otp: "" }));
+      }
       setMode("verify");
     } catch (err) {
       setError(err.message || "Unable to send OTP");
