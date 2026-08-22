@@ -15,7 +15,6 @@ const createTransporter = () => {
   const pass = (process.env.SMTP_PASS || process.env.EMAIL_PASS || "vutxrdypsjnlysvi").trim().replace(/\s+/g, "");
 
   if (!user || !pass) {
-    console.warn("⚠️ SMTP credentials missing");
     return null;
   }
 
@@ -27,14 +26,95 @@ const createTransporter = () => {
       user,
       pass,
     },
-    family: 4, // Explicitly force IPv4 socket to avoid ENETUNREACH IPv6 on Render
-    connectionTimeout: 15000,
-    greetingTimeout: 15000,
-    socketTimeout: 20000,
+    family: 4,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 12000,
     tls: {
       rejectUnauthorized: false,
     },
   });
+};
+
+/**
+ * Universal Email Dispatcher
+ * Supports Resend (HTTPS Port 443), Brevo (HTTPS Port 443), and Nodemailer SMTP
+ */
+const sendUniversalEmail = async ({ to, subject, html, text }) => {
+  // 1. Resend HTTPS API (Port 443 - Bypasses all cloud host SMTP port blocks)
+  if (process.env.RESEND_API_KEY) {
+    try {
+      console.log(`📧 Sending OTP via Resend HTTPS API (Port 443) to: ${to}...`);
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.RESEND_API_KEY.trim()}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: process.env.RESEND_FROM || "WealthX Security <onboarding@resend.dev>",
+          to: [to],
+          subject,
+          html,
+          text,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || JSON.stringify(data));
+      }
+      console.log(`✅ OTP email sent via Resend HTTPS! Message ID: ${data.id}`);
+      return { success: true, method: "resend", id: data.id };
+    } catch (err) {
+      console.warn("⚠️ Resend API call failed, falling back to SMTP:", err.message);
+    }
+  }
+
+  // 2. Brevo HTTPS API (Port 443)
+  if (process.env.BREVO_API_KEY) {
+    try {
+      console.log(`📧 Sending OTP via Brevo HTTPS API (Port 443) to: ${to}...`);
+      const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+        method: "POST",
+        headers: {
+          "api-key": process.env.BREVO_API_KEY.trim(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sender: { name: "WealthX Security", email: process.env.SMTP_USER || "teamaitvisioners@gmail.com" },
+          to: [{ email: to }],
+          subject,
+          htmlContent: html,
+          textContent: text,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.message || JSON.stringify(data));
+      }
+      console.log(`✅ OTP email sent via Brevo HTTPS! Message ID: ${data.messageId}`);
+      return { success: true, method: "brevo", id: data.messageId };
+    } catch (err) {
+      console.warn("⚠️ Brevo API call failed, falling back to SMTP:", err.message);
+    }
+  }
+
+  // 3. Standard Nodemailer SMTP
+  const transporter = createTransporter();
+  if (transporter) {
+    console.log(`📧 Sending OTP via Gmail SMTP to: ${to}...`);
+    const info = await transporter.sendMail({
+      from: process.env.SMTP_FROM || `"WealthX Security" <${process.env.SMTP_USER || "teamaitvisioners@gmail.com"}>`,
+      to,
+      subject,
+      text,
+      html,
+    });
+    console.log(`✅ OTP email sent via Gmail SMTP! Message ID: ${info.messageId}`);
+    return { success: true, method: "smtp", id: info.messageId };
+  }
+
+  throw new Error("No active email transport configured.");
 };
 
 const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -198,18 +278,8 @@ const forgotPassword = async (req, res) => {
     user.resetOtpExpires = Date.now() + 5 * 60 * 1000;
     await user.save();
 
-    const transporter = createTransporter();
-
-    if (!transporter) {
-      return res.status(500).json({
-        message: "Email service is not configured",
-      });
-    }
-
     try {
-      console.log(`📧 Sending OTP email to: ${user.email}...`);
-      const info = await transporter.sendMail({
-        from: process.env.SMTP_FROM || `"WealthX Security" <${user.email}>`,
+      await sendUniversalEmail({
         to: user.email,
         subject: `🔒 ${otp} is your WealthX Password Reset Verification Code`,
         text: `Your WealthX password reset verification code is: ${otp}. This OTP will expire in 5 minutes. If you did not request this, please ignore this email.`,
@@ -239,7 +309,6 @@ const forgotPassword = async (req, res) => {
           </div>
         `,
       });
-      console.log(`✅ OTP email sent successfully to ${user.email}! MessageId: ${info.messageId}`);
     } catch (mailError) {
       console.error("❌ Failed to send OTP email:", mailError.message);
       return res.status(500).json({
