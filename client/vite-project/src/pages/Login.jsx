@@ -7,6 +7,17 @@ import "./Login.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+const validatePassword = (password) => {
+  if (!password || password.length < 8) return "Password must be at least 8 characters long";
+  if (!/[A-Z]/.test(password)) return "Password must contain at least 1 uppercase letter (A-Z)";
+  if (!/[a-z]/.test(password)) return "Password must contain at least 1 lowercase letter (a-z)";
+  if (!/[0-9]/.test(password)) return "Password must contain at least 1 number (0-9)";
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(password)) {
+    return "Password must contain at least 1 special character (!@#$%^&*)";
+  }
+  return null;
+};
+
 function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -17,6 +28,13 @@ function Login() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [otpVerified, setOtpVerified] = useState(false);
+
+  const hasMinLength = resetData.password.length >= 8;
+  const hasUppercase = /[A-Z]/.test(resetData.password);
+  const hasLowercase = /[a-z]/.test(resetData.password);
+  const hasNumber = /[0-9]/.test(resetData.password);
+  const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~]/.test(resetData.password);
+  const isResetPasswordValid = hasMinLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
 
   useEffect(() => {
     const sessionTimeoutMsg = sessionStorage.getItem("session_timeout_msg");
@@ -132,9 +150,16 @@ function Login() {
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
     setMessage("");
+
+    const passwordError = validatePassword(resetData.password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
@@ -323,10 +348,39 @@ function Login() {
                   required
                 />
 
+                {/* Realtime Password Policy Checklist for Reset Mode */}
+                {resetData.password.length > 0 && (
+                  <div className="password-checklist">
+                    <div className="checklist-title">Password must contain:</div>
+                    <div className="checklist-grid">
+                      <div className={`checklist-item ${hasMinLength ? "valid" : "invalid"}`}>
+                        <span className="chk-icon">{hasMinLength ? "✓" : "•"}</span>
+                        <span>8+ Characters</span>
+                      </div>
+                      <div className={`checklist-item ${hasUppercase ? "valid" : "invalid"}`}>
+                        <span className="chk-icon">{hasUppercase ? "✓" : "•"}</span>
+                        <span>1 Uppercase (A-Z)</span>
+                      </div>
+                      <div className={`checklist-item ${hasLowercase ? "valid" : "invalid"}`}>
+                        <span className="chk-icon">{hasLowercase ? "✓" : "•"}</span>
+                        <span>1 Lowercase (a-z)</span>
+                      </div>
+                      <div className={`checklist-item ${hasNumber ? "valid" : "invalid"}`}>
+                        <span className="chk-icon">{hasNumber ? "✓" : "•"}</span>
+                        <span>1 Number (0-9)</span>
+                      </div>
+                      <div className={`checklist-item ${hasSpecial ? "valid" : "invalid"}`}>
+                        <span className="chk-icon">{hasSpecial ? "✓" : "•"}</span>
+                        <span>1 Special (!@#$)</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {error ? <p className="status error">{error}</p> : null}
                 {message ? <p className="status success">{message}</p> : null}
 
-                <button type="submit" disabled={loading || !otpVerified}>
+                <button type="submit" disabled={loading || !otpVerified || (resetData.password.length > 0 && !isResetPasswordValid)}>
                   {loading ? "Updating..." : "Reset Password"}
                 </button>
               </form>
