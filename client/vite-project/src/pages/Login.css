@@ -117,3 +117,25 @@
 .login-page .card .status.success {
     color: #b9f6ca;
 }
+
+@media (max-width: 480px) {
+    .login-page {
+        padding: 85px 14px 28px;
+    }
+    .login-page .card {
+        padding: 24px 18px;
+        border-radius: 16px;
+        gap: 16px;
+    }
+    .login-page .card h2 {
+        font-size: 24px;
+    }
+    .login-page .card input {
+        height: 44px;
+        font-size: 14px;
+    }
+    .login-page .card button {
+        height: 46px;
+        font-size: 16px;
+    }
+}
