@@ -84,7 +84,7 @@ const calculateDebtHealth = (income = 0, totalMonthlyEMI = 0, loansCount = 0) =>
   const emi = Number(totalMonthlyEMI) || 0;
   const emiBurdenPct = inc > 0 ? Math.round((emi / inc) * 100) : 0;
 
-  if (loansCount === 0 || emi === 0) {
+  if (loansCount === 0 && emi === 0) {
     return {
       emiBurdenPct: 0,
       loansCount: 0,
@@ -97,16 +97,16 @@ const calculateDebtHealth = (income = 0, totalMonthlyEMI = 0, loansCount = 0) =>
 
   let debtHealthStatus = "good";
   let debtHealthLabel = "Healthy (<20% DTI)";
-  let debtExplanation = `Your active loan EMI commitments take ${emiBurdenPct}% of your monthly income (₹${emi.toLocaleString("en-IN")}/mo), well within the safe 20% limit.`;
+  let debtExplanation = `Your active loan EMI commitments take ${emiBurdenPct}% of your monthly income (₹${emi.toLocaleString("en-IN")}/mo), maintaining a safe debt-service ratio.`;
 
   if (emiBurdenPct > 40) {
     debtHealthStatus = "critical";
     debtHealthLabel = "Heavy Burden (>40% DTI)";
-    debtExplanation = `Your loan EMIs consume ${emiBurdenPct}% of your monthly income. Prepaying high-interest debt should be prioritized before taking new commitments.`;
+    debtExplanation = `Your loan EMIs consume ${emiBurdenPct}% of your monthly income (₹${emi.toLocaleString("en-IN")}/mo). Prepaying high-interest debt should be prioritized before taking new commitments.`;
   } else if (emiBurdenPct > 20) {
     debtHealthStatus = "warning";
     debtHealthLabel = "Moderate (20-40% DTI)";
-    debtExplanation = `Your loan EMIs consume ${emiBurdenPct}% of your monthly income. Maintaining this debt level is sustainable, but avoid adding new loan facilities.`;
+    debtExplanation = `Your loan EMIs consume ${emiBurdenPct}% of your monthly income (₹${emi.toLocaleString("en-IN")}/mo). Maintaining this debt level is sustainable, but avoid adding new loan facilities.`;
   }
 
   return {
@@ -166,7 +166,7 @@ const calculateFinancialHealth = ({
 };
 
 /**
- * Calculate consolidated portfolio asset breakdown across Equity, Debt, Gold, Cash
+ * Calculate consolidated portfolio asset breakdown across Equity, Debt, Gold, Real Estate/Other, Cash
  */
 const calculatePortfolioAllocation = (assets = [], liquidSavings = 0) => {
   let totalInvestments = 0;
@@ -178,23 +178,25 @@ const calculatePortfolioAllocation = (assets = [], liquidSavings = 0) => {
     totalInvestments += val;
     totalInvestedPrincipal += Number(asset.investedAmount || 0);
 
-    const cat = asset.category || "other";
+    const cat = (asset.category || "other").toLowerCase();
     categoryTotals[cat] = (categoryTotals[cat] || 0) + val;
   });
 
   const liquid = Number(liquidSavings) || 0;
   const totalPortfolio = totalInvestments + liquid;
 
-  // Map to asset classes
-  const equityVal = (categoryTotals.stock || 0) + (categoryTotals.mutual_fund || 0) + (categoryTotals.etf || 0);
-  const debtVal = (categoryTotals.fd || 0) + (categoryTotals.bond || 0);
-  const goldVal = categoryTotals.gold || 0;
-  const cashVal = liquid + (categoryTotals.savings || 0);
+  // Map to distinct asset classes
+  const equityVal = (categoryTotals.stock || 0) + (categoryTotals.mutual_fund || 0) + (categoryTotals.sip || 0) + (categoryTotals.etf || 0) + (categoryTotals.equity || 0);
+  const debtVal = (categoryTotals.fd || 0) + (categoryTotals.bond || 0) + (categoryTotals.epf || 0) + (categoryTotals.ppf || 0) + (categoryTotals.debt_fund || 0) + (categoryTotals.debt || 0);
+  const goldVal = (categoryTotals.gold || 0) + (categoryTotals.digital_gold || 0) + (categoryTotals.sgb || 0);
+  const otherVal = (categoryTotals.other || 0) + (categoryTotals.real_estate || 0) + (categoryTotals.property || 0) + (categoryTotals.land || 0) + (categoryTotals.crypto || 0) + (categoryTotals.alternate || 0);
+  const cashVal = liquid + (categoryTotals.savings || 0) + (categoryTotals.cash || 0);
 
   const equityPct = totalPortfolio > 0 ? Math.round((equityVal / totalPortfolio) * 100) : 0;
   const debtPct = totalPortfolio > 0 ? Math.round((debtVal / totalPortfolio) * 100) : 0;
   const goldPct = totalPortfolio > 0 ? Math.round((goldVal / totalPortfolio) * 100) : 0;
-  const cashPct = totalPortfolio > 0 ? Math.round((cashVal / totalPortfolio) * 100) : 100;
+  const otherPct = totalPortfolio > 0 ? Math.round((otherVal / totalPortfolio) * 100) : 0;
+  const cashPct = totalPortfolio > 0 ? Math.round((cashVal / totalPortfolio) * 100) : (liquid > 0 ? 100 : 0);
 
   return {
     totalInvestments,
@@ -204,10 +206,12 @@ const calculatePortfolioAllocation = (assets = [], liquidSavings = 0) => {
     equityVal,
     debtVal,
     goldVal,
+    otherVal,
     cashVal,
     equityPct,
     debtPct,
     goldPct,
+    otherPct,
     cashPct,
   };
 };

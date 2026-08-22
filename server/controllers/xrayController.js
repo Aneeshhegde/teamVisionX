@@ -41,8 +41,17 @@ const getFinancialXRay = async (req, res) => {
     let totalOutstandingDebt = 0;
     let totalMonthlyEMI = 0;
     loans.forEach((loan) => {
-      totalOutstandingDebt += Number(loan.outstandingAmount || 0);
-      totalMonthlyEMI += Number(loan.monthlyEMI || 0);
+      let emi = Number(loan.monthlyEMI || 0);
+      if (emi <= 0 && loan.principal && loan.interestRate && loan.tenureMonths) {
+        const p = Number(loan.principal);
+        const r = Number(loan.interestRate) / 12 / 100;
+        const n = Number(loan.tenureMonths);
+        if (p > 0 && r > 0 && n > 0) {
+          emi = Math.round((p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1));
+        }
+      }
+      totalOutstandingDebt += Number(loan.outstandingAmount || loan.principal || 0);
+      totalMonthlyEMI += emi;
     });
     const debtHealth = calculateDebtHealth(monthlyIncome, totalMonthlyEMI, loans.length);
 

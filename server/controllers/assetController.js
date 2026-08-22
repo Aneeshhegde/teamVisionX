@@ -33,8 +33,16 @@ const getAssets = async (req, res) => {
       categoryTotals[asset.category].count += 1;
     });
 
+    const Loan = require("../models/Loan");
+    const loans = await Loan.find({ userId });
+    let totalLiabilities = 0;
+    loans.forEach((loan) => {
+      totalLiabilities += Number(loan.outstandingAmount || loan.principal || 0);
+    });
+
     const liquidSavings = profile?.currentSavings || 0;
-    const overallNetWorth = totalCurrentValue + liquidSavings;
+    const totalAssets = totalCurrentValue + liquidSavings;
+    const overallNetWorth = Math.max(0, totalAssets - totalLiabilities);
     const totalGainLoss = totalCurrentValue - totalInvested;
     const totalGainLossPercentage = totalInvested > 0
       ? Number(((totalGainLoss / totalInvested) * 100).toFixed(2))
@@ -56,10 +64,12 @@ const getAssets = async (req, res) => {
         totalGainLoss,
         totalGainLossPercentage,
         liquidSavings,
-        totalLiabilities: 0,
+        totalLiabilities,
+        totalAssets,
         netWorth: overallNetWorth,
         categoryBreakdown,
         count: assets.length,
+        activeLoansCount: loans.length,
       },
     });
   } catch (error) {

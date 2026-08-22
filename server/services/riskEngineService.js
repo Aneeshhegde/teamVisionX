@@ -232,7 +232,16 @@ function calculateCapacityScore(profile = {}, loans = [], assets = []) {
   let totalMonthlyEMI = 0;
   if (Array.isArray(loans)) {
     loans.forEach((l) => {
-      totalMonthlyEMI += Number(l.monthlyEmi || l.emi || 0);
+      let emi = Number(l.monthlyEMI || l.monthlyEmi || l.emi || 0);
+      if (emi <= 0 && l.principal && l.interestRate && l.tenureMonths) {
+        const p = Number(l.principal);
+        const r = Number(l.interestRate) / 12 / 100;
+        const n = Number(l.tenureMonths);
+        if (p > 0 && r > 0 && n > 0) {
+          emi = Math.round((p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1));
+        }
+      }
+      totalMonthlyEMI += emi;
     });
   }
 
@@ -466,31 +475,36 @@ function calculateRiskProfile({
   });
 
   // 8. Actual Portfolio vs Target Audit
-  let actualPortfolio = { equityPct: 0, debtPct: 0, goldPct: 0, cashPct: 100, totalValue: 0 };
-  let equityTotal = 0, debtTotal = 0, goldTotal = 0, cashTotal = Number(financialProfile?.currentSavings || 0);
+  let actualPortfolio = { equityPct: 0, debtPct: 0, goldPct: 0, otherPct: 0, cashPct: 100, totalValue: 0 };
+  let equityTotal = 0, debtTotal = 0, goldTotal = 0, otherTotal = 0;
+  let cashTotal = Number(financialProfile?.currentSavings || 0);
 
   if (Array.isArray(assets) && assets.length > 0) {
     assets.forEach((a) => {
       const val = Number(a.currentValue || 0);
       const cat = (a.category || "").toLowerCase();
-      if (["stock", "mutual_fund", "sip", "etf"].includes(cat)) equityTotal += val;
-      else if (["fd", "bond", "epf", "ppf", "debt_fund"].includes(cat)) debtTotal += val;
+      if (["stock", "mutual_fund", "sip", "etf", "equity"].includes(cat)) equityTotal += val;
+      else if (["fd", "bond", "epf", "ppf", "debt_fund", "debt", "nps"].includes(cat)) debtTotal += val;
       else if (["gold", "digital_gold", "sgb"].includes(cat)) goldTotal += val;
-      else cashTotal += val;
+      else if (["other", "real_estate", "property", "land", "agriculture", "alternate", "crypto", "business"].includes(cat)) otherTotal += val;
+      else if (["cash", "savings", "bank_account"].includes(cat)) cashTotal += val;
+      else otherTotal += val; // Default unclassified assets to Other Holdings, not Cash!
     });
   }
 
-  const totalPortfolioValue = equityTotal + debtTotal + goldTotal + cashTotal;
+  const totalPortfolioValue = equityTotal + debtTotal + goldTotal + otherTotal + cashTotal;
   if (totalPortfolioValue > 0) {
     actualPortfolio = {
       equityPct: Number(((equityTotal / totalPortfolioValue) * 100).toFixed(1)),
       debtPct: Number(((debtTotal / totalPortfolioValue) * 100).toFixed(1)),
       goldPct: Number(((goldTotal / totalPortfolioValue) * 100).toFixed(1)),
+      otherPct: Number(((otherTotal / totalPortfolioValue) * 100).toFixed(1)),
       cashPct: Number(((cashTotal / totalPortfolioValue) * 100).toFixed(1)),
       totalValue: totalPortfolioValue,
       equityTotal,
       debtTotal,
       goldTotal,
+      otherTotal,
       cashTotal,
     };
   }
@@ -504,17 +518,23 @@ function calculateRiskProfile({
   };
 
   const equityVariance = actualPortfolio.equityPct - recAlloc.equityPct;
-  if (equityVariance >= 15 && totalPortfolioValue > 0) {
+  if (otherTotal > 0 && actualPortfolio.otherPct >= 40) {
+    portfolioAlignment = {
+      status: "illiquid_concentration",
+      badge: "📑 High Illiquid / Real Estate Asset Weight",
+      message: `A significant portion (${actualPortfolio.otherPct}%, ₹${otherTotal.toLocaleString("en-IN")}) is in real estate or alternative illiquid holdings. Build a liquid financial portfolio (Equity, Debt & Gold) to support regular cashflow needs.`,
+    };
+  } else if (equityVariance >= 15 && totalPortfolioValue > 0) {
     portfolioAlignment = {
       status: "high_equity_variance",
       badge: "🟡 Higher Equity Exposure",
       message: `Your actual equity weighting (${actualPortfolio.equityPct}%) is ${Math.round(equityVariance)}% above your Risk DNA target (${recAlloc.equityPct}%). This creates elevated drawdown risk during cyclical corrections.`,
     };
-  } else if (equityVariance <= -20 && totalPortfolioValue > 0) {
+  } else if (equityVariance <= -20 && actualPortfolio.cashPct >= 35 && totalPortfolioValue > 0) {
     portfolioAlignment = {
       status: "under_compounding_variance",
       badge: "ℹ️ Conservative Cash Drag",
-      message: `Your equity exposure (${actualPortfolio.equityPct}%) is significantly below your Risk DNA target (${recAlloc.equityPct}%). Long-term cash and fixed deposits drag inflation-adjusted compounding.`,
+      message: `Your liquid cash weighting (${actualPortfolio.cashPct}%) is high while equity (${actualPortfolio.equityPct}%) is below your Risk DNA target (${recAlloc.equityPct}%). Consider deploying surplus cash into diversified mutual funds.`,
     };
   }
 

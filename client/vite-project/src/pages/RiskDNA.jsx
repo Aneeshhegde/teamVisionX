@@ -220,6 +220,9 @@ Please explain:
     { label: "Actual Equity", percentage: actualPortfolio.equityPct || 0, amount: actualPortfolio.equityTotal || 0, color: "#3b82f6" },
     { label: "Actual Debt", percentage: actualPortfolio.debtPct || 0, amount: actualPortfolio.debtTotal || 0, color: "#8b5cf6" },
     { label: "Actual Gold", percentage: actualPortfolio.goldPct || 0, amount: actualPortfolio.goldTotal || 0, color: "#f59e0b" },
+    ...(Number(actualPortfolio.otherTotal || 0) > 0 ? [
+      { label: "Real Estate / Other", percentage: actualPortfolio.otherPct || 0, amount: actualPortfolio.otherTotal || 0, color: "#06b6d4" }
+    ] : []),
     { label: "Actual Cash", percentage: actualPortfolio.cashPct || 0, amount: actualPortfolio.cashTotal || 0, color: "#10b981" },
   ];
 
