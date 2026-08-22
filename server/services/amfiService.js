@@ -4,6 +4,7 @@
  * All NAVs are tagged with official NAV Date and never labeled as "LIVE".
  */
 
+const mongoose = require("mongoose");
 const MutualFund = require("../models/MutualFund");
 
 // Curated reference database of benchmark Indian Mutual Funds with official AMFI scheme codes
