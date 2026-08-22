@@ -17,41 +17,74 @@ const riskProfileSchema = new mongoose.Schema(
     },
     profileCategory: {
       type: String,
-      enum: ["conservative", "moderate", "moderate_growth", "growth", "aggressive"],
+      enum: ["very_conservative", "conservative", "balanced", "moderate", "moderate_growth", "growth", "aggressive"],
       required: true,
     },
     categoryLabel: {
       type: String,
-      default: "Moderate Growth",
+      default: "Balanced Growth (Strategic Compounder)",
     },
-    riskTolerance: {
-      type: String,
-      default: "Medium",
-    },
-    riskCapacity: {
-      type: String,
-      default: "Moderate",
+    componentScores: {
+      riskToleranceScore: { type: Number, default: 50 },
+      investmentHorizonScore: { type: Number, default: 70 },
+      goalCompatibilityScore: { type: Number, default: 70 },
+      riskCapacityScore: { type: Number, default: 55 },
     },
     investmentHorizonYears: {
       type: Number,
       default: 7,
     },
     recommendedAllocation: {
-      equityPct: { type: Number, default: 55, min: 0, max: 100 },
-      debtPct: { type: Number, default: 25, min: 0, max: 100 },
+      equityPct: { type: Number, default: 70, min: 0, max: 100 },
+      debtPct: { type: Number, default: 15, min: 0, max: 100 },
       goldPct: { type: Number, default: 10, min: 0, max: 100 },
-      cashPct: { type: Number, default: 10, min: 0, max: 100 },
+      cashPct: { type: Number, default: 5, min: 0, max: 100 },
+    },
+    toleranceVsCapacity: {
+      toleranceScore: Number,
+      capacityScore: Number,
+      differential: Number,
+      status: String,
+      headline: String,
+      explanation: String,
+    },
+    whyReasons: {
+      type: [String],
+      default: [],
+    },
+    warnings: {
+      type: [String],
+      default: [],
+    },
+    guidance: {
+      type: [String],
+      default: [],
+    },
+    explanation: {
+      type: String,
+      default: "",
+    },
+    confidence: {
+      type: Number,
+      default: 90,
     },
     assessmentAnswers: {
-      ageGroup: String,
-      incomeStability: String,
-      emergencyBuffer: String,
-      investmentExperience: String,
-      timeHorizon: String,
-      marketReaction: String,
-      primaryGoal: String,
-      lossComfort: String,
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
     },
+    isAssessed: {
+      type: Boolean,
+      default: true,
+    },
+    history: [
+      {
+        score: Number,
+        categoryLabel: String,
+        profileCategory: String,
+        date: { type: Date, default: Date.now },
+        reason: String,
+      },
+    ],
   },
   {
     timestamps: true,

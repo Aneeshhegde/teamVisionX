@@ -168,6 +168,7 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
+/* High-Contrast Universal Placeholder Rules */
 input::placeholder,
 textarea::placeholder,
 select::placeholder {
@@ -175,6 +176,19 @@ select::placeholder {
   opacity: 0.85;
 }
 
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+/* Light Theme Crisp High-Contrast Placeholders & Input Elements */
 [data-theme="light"] input::placeholder,
 [data-theme="light"] textarea::placeholder,
 [data-theme="light"] select::placeholder,
@@ -182,7 +196,34 @@ select::placeholder {
 .light-theme textarea::placeholder,
 .light-theme select::placeholder {
   color: #64748b !important;
-  opacity: 0.9 !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] input::-webkit-input-placeholder,
+[data-theme="light"] textarea::-webkit-input-placeholder,
+.light-theme input::-webkit-input-placeholder,
+.light-theme textarea::-webkit-input-placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] input::-moz-placeholder,
+[data-theme="light"] textarea::-moz-placeholder,
+.light-theme input::-moz-placeholder,
+.light-theme textarea::-moz-placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea,
+.light-theme input,
+.light-theme select,
+.light-theme textarea {
+  color: #0f172a !important;
+  background-color: #f1f5f9;
+  border-color: rgba(15, 23, 42, 0.15);
 }
 
 /* Glassmorphism Panel Class */

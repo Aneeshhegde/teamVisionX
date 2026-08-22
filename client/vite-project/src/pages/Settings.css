@@ -150,10 +150,21 @@
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  color: #fff;
+  color: var(--text-primary);
   font-size: 14px;
   font-family: var(--font-mono);
   transition: var(--transition-smooth);
+}
+
+.custom-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.85;
+}
+
+[data-theme="light"] .custom-input::placeholder,
+.light-theme .custom-input::placeholder {
+  color: #64748b;
+  opacity: 0.9;
 }
 
 .custom-input:focus {
@@ -168,9 +179,14 @@
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  color: #fff;
+  color: var(--text-primary);
   font-size: 13.5px;
   transition: var(--transition-smooth);
+}
+
+.custom-select option {
+  background: var(--bg-surface-elevated);
+  color: var(--text-primary);
 }
 
 .custom-select:focus {
@@ -209,7 +225,8 @@
 
 .pref-chip-btn:hover {
   background: var(--bg-card-hover);
-  color: #fff;
+  color: var(--text-primary);
+  border-color: var(--border-active);
 }
 
 .pref-chip-btn.selected {
@@ -399,7 +416,7 @@
 
 .quick-link-item:hover {
   background: var(--bg-card-hover);
-  color: #fff;
+  color: var(--accent-cyan);
   border-color: var(--accent-cyan);
   transform: translateX(3px);
 }
