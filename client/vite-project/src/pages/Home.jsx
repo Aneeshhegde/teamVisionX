@@ -16,6 +16,14 @@ const FEATURE_PILLARS = [
     badge: "Diagnostic",
   },
   {
+    id: "risk",
+    title: "Your Risk DNA",
+    icon: "🧬",
+    desc: "Personalized risk profiling evaluating Goals, Horizon, Capacity & Tolerance.",
+    route: "/risk-dna",
+    badge: "Risk Profiling",
+  },
+  {
     id: "vault",
     title: "Wealth Vault",
     icon: "🏦",
@@ -37,7 +45,7 @@ const FEATURE_PILLARS = [
     icon: "🎮",
     desc: "Learn. Decide. Invest. Grow. Risk-free simulation with AI Mentor.",
     route: "/investor-quest",
-    badge: "🎮 Investor Quest",
+    badge: "Investor Quest",
   },
   {
     id: "schemes",
@@ -89,7 +97,7 @@ function Home() {
         </h1>
 
         <p className="hero-subtitle">
-          Diagnose where you stand with <strong>Financial X-Ray</strong>, track where your money compounds in <strong>Wealth Vault</strong>, and simulate your next moves with the <strong>AI Decision Lab</strong>.
+          Diagnose where you stand with <strong>Financial X-Ray</strong>, decode your <strong>Risk DNA</strong>, track where your money compounds in <strong>Wealth Vault</strong>, and simulate your next moves with the <strong>AI Decision Lab</strong>.
         </p>
 
         <div className="hero-buttons">
