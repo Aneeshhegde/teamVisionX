@@ -10,56 +10,36 @@ const createTransporter = () => {
     SMTP_USER,
     SMTP_PASS,
     SMTP_SECURE,
-    SMTP_SERVICE,
     EMAIL_USER,
     EMAIL_PASS,
-    EMAIL_SERVICE,
   } = process.env;
 
   const user = SMTP_USER || EMAIL_USER;
   const pass = SMTP_PASS || EMAIL_PASS;
-  const serviceName = SMTP_SERVICE || EMAIL_SERVICE;
-  const useGmailService = serviceName === "gmail" || SMTP_HOST === "smtp.gmail.com" || (!SMTP_HOST && !SMTP_PORT && user && pass);
 
   if (!user || !pass) {
+    console.warn("⚠️ SMTP credentials missing (SMTP_USER or SMTP_PASS not set in environment variables)");
     return null;
   }
 
-  if (!useGmailService && (!SMTP_HOST || !SMTP_PORT)) {
-    return null;
-  }
-
-  const port = Number(SMTP_PORT || 587);
-  const secure = SMTP_SECURE === "true" || port === 465;
-
-  const transporterConfig = {
-    family: 4,
-    auth: {
-      user,
-      pass,
-    },
-    tls: {
-      rejectUnauthorized: false,
-      minVersion: "TLSv1.2",
-    },
-  };
-
-  if (useGmailService) {
-    return nodemailer.createTransport({
-      ...transporterConfig,
-      service: "gmail",
-    });
-  }
+  // Use port 465 (SSL) for cloud hosting reliability (avoids port 587 blocks on cloud providers)
+  const port = Number(SMTP_PORT || 465);
+  const isSecure = port === 465 || SMTP_SECURE === "true";
 
   return nodemailer.createTransport({
-    host: SMTP_HOST,
+    host: SMTP_HOST || "smtp.gmail.com",
     port,
-    secure,
-    requireTLS: !secure,
-    connectionTimeout: 15000,
-    greetingTimeout: 15000,
+    secure: isSecure,
+    auth: {
+      user: user.trim(),
+      pass: pass.trim().replace(/\s+/g, ""), // Clean any accidental whitespace in app password
+    },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
     socketTimeout: 15000,
-    ...transporterConfig,
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
 };
 
@@ -233,8 +213,9 @@ const forgotPassword = async (req, res) => {
     }
 
     try {
-      await transporter.sendMail({
-        from: process.env.SMTP_FROM || `"WealthX Security" <${process.env.SMTP_USER}>`,
+      console.log(`📧 Sending OTP email to: ${user.email} (Port 465 SSL)...`);
+      const info = await transporter.sendMail({
+        from: process.env.SMTP_FROM || `"WealthX Security" <${process.env.SMTP_USER || "teamaitvisioners@gmail.com"}>`,
         to: user.email,
         subject: `🔒 ${otp} is your WealthX Password Reset Verification Code`,
         text: `Your WealthX password reset verification code is: ${otp}. This OTP will expire in 5 minutes. If you did not request this, please ignore this email.`,
@@ -264,7 +245,9 @@ const forgotPassword = async (req, res) => {
           </div>
         `,
       });
+      console.log(`✅ OTP email sent successfully! MessageId: ${info.messageId}`);
     } catch (mailError) {
+      console.error("❌ Failed to send OTP email:", mailError.message);
       return res.status(500).json({
         message: `Failed to send OTP email: ${mailError.message}`,
       });
