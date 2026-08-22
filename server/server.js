@@ -1,3 +1,10 @@
+const dns = require("dns");
+try {
+  dns.setDefaultResultOrder("ipv4first");
+} catch (e) {
+  // Ignore in environments where not supported
+}
+
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");

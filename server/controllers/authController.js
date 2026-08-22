@@ -3,6 +3,13 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
+const dns = require("dns");
+try {
+  dns.setDefaultResultOrder("ipv4first");
+} catch (e) {
+  // Ignore
+}
+
 const createTransporter = () => {
   const user = (process.env.SMTP_USER || process.env.EMAIL_USER || "teamaitvisioners@gmail.com").trim();
   const pass = (process.env.SMTP_PASS || process.env.EMAIL_PASS || "vutxrdypsjnlysvi").trim().replace(/\s+/g, "");
@@ -13,14 +20,20 @@ const createTransporter = () => {
   }
 
   return nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
     auth: {
       user,
       pass,
     },
+    family: 4, // Explicitly force IPv4 socket to avoid ENETUNREACH IPv6 on Render
     connectionTimeout: 15000,
     greetingTimeout: 15000,
     socketTimeout: 20000,
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
 };
 
