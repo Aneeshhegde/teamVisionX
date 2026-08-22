@@ -4,42 +4,23 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 
 const createTransporter = () => {
-  const {
-    SMTP_HOST,
-    SMTP_PORT,
-    SMTP_USER,
-    SMTP_PASS,
-    SMTP_SECURE,
-    EMAIL_USER,
-    EMAIL_PASS,
-  } = process.env;
-
-  const user = SMTP_USER || EMAIL_USER;
-  const pass = SMTP_PASS || EMAIL_PASS;
+  const user = (process.env.SMTP_USER || process.env.EMAIL_USER || "teamaitvisioners@gmail.com").trim();
+  const pass = (process.env.SMTP_PASS || process.env.EMAIL_PASS || "vutxrdypsjnlysvi").trim().replace(/\s+/g, "");
 
   if (!user || !pass) {
-    console.warn("⚠️ SMTP credentials missing (SMTP_USER or SMTP_PASS not set in environment variables)");
+    console.warn("⚠️ SMTP credentials missing");
     return null;
   }
 
-  // Use port 465 (SSL) for cloud hosting reliability (avoids port 587 blocks on cloud providers)
-  const port = Number(SMTP_PORT || 465);
-  const isSecure = port === 465 || SMTP_SECURE === "true";
-
   return nodemailer.createTransport({
-    host: SMTP_HOST || "smtp.gmail.com",
-    port,
-    secure: isSecure,
+    service: "gmail",
     auth: {
-      user: user.trim(),
-      pass: pass.trim().replace(/\s+/g, ""), // Clean any accidental whitespace in app password
+      user,
+      pass,
     },
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-    tls: {
-      rejectUnauthorized: false,
-    },
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
   });
 };
 
@@ -213,9 +194,9 @@ const forgotPassword = async (req, res) => {
     }
 
     try {
-      console.log(`📧 Sending OTP email to: ${user.email} (Port 465 SSL)...`);
+      console.log(`📧 Sending OTP email to: ${user.email}...`);
       const info = await transporter.sendMail({
-        from: process.env.SMTP_FROM || `"WealthX Security" <${process.env.SMTP_USER || "teamaitvisioners@gmail.com"}>`,
+        from: process.env.SMTP_FROM || `"WealthX Security" <${user.email}>`,
         to: user.email,
         subject: `🔒 ${otp} is your WealthX Password Reset Verification Code`,
         text: `Your WealthX password reset verification code is: ${otp}. This OTP will expire in 5 minutes. If you did not request this, please ignore this email.`,
@@ -247,13 +228,14 @@ const forgotPassword = async (req, res) => {
       });
       console.log(`✅ OTP email sent successfully to ${user.email}! MessageId: ${info.messageId}`);
     } catch (mailError) {
-      console.warn(`⚠️ Cloud SMTP delivery notice (${mailError.message}). Active OTP saved in database.`);
-      console.log(`🔑 [CLOUD LOGS OTP]: ${otp} for user ${user.email}`);
+      console.error("❌ Failed to send OTP email:", mailError.message);
+      return res.status(500).json({
+        message: `Failed to send OTP email: ${mailError.message}`,
+      });
     }
 
     return res.status(200).json({
-      message: "OTP sent to email",
-      devOtp: otp, // Enables zero-downtime verification on cloud instances where outbound SMTP ports are restricted
+      message: "OTP sent to your email. Please check your inbox.",
     });
   } catch (error) {
     return res.status(500).json({

@@ -82,10 +82,8 @@ function Login() {
         throw new Error(data.message || "Unable to send OTP");
       }
 
-      setMessage(data.message || "OTP sent to email");
-      if (data.devOtp) {
-        setResetData((prev) => ({ ...prev, otp: data.devOtp }));
-      }
+      setMessage(data.message || "OTP sent to your email. Please check your inbox.");
+      setResetData((prev) => ({ ...prev, otp: "" }));
       setMode("verify");
     } catch (err) {
       setError(err.message || "Unable to send OTP");
